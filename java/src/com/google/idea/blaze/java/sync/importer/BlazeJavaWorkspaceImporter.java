@@ -237,25 +237,23 @@ public final class BlazeJavaWorkspaceImporter {
       workspaceBuilder.jdeps.addAll(jars);
     }
 
-    // Add all deps if this target is in the current working set
-    if (workingSet == null || workingSet.isTargetInWorkingSet(target)) {
-      // Add self, so we pick up our own gen jars if in working set
-      workspaceBuilder.directDeps.add(targetKey);
-      for (Dependency dep : target.getDependencies()) {
-        if (dep.getDependencyType() != DependencyType.COMPILE_TIME) {
-          continue;
-        }
-        // forward deps from java proto_library aspect targets
-        TargetIdeInfo depTarget = targetMap.get(dep.getTargetKey());
-        if (depTarget != null
-            && JavaBlazeRules.getJavaProtoLibraryKinds().contains(depTarget.getKind())) {
-          workspaceBuilder.directDeps.addAll(
-              depTarget.getDependencies().stream()
-                  .map(Dependency::getTargetKey)
-                  .collect(Collectors.toList()));
-        } else {
-          workspaceBuilder.directDeps.add(dep.getTargetKey());
-        }
+    // Add all deps always - workaround .jdeps missing external dependencies
+    // Add self, so we pick up our own gen jars if in working set
+    workspaceBuilder.directDeps.add(targetKey);
+    for (Dependency dep : target.getDependencies()) {
+      if (dep.getDependencyType() != DependencyType.COMPILE_TIME) {
+        continue;
+      }
+      // forward deps from java proto_library aspect targets
+      TargetIdeInfo depTarget = targetMap.get(dep.getTargetKey());
+      if (depTarget != null
+          && JavaBlazeRules.getJavaProtoLibraryKinds().contains(depTarget.getKind())) {
+        workspaceBuilder.directDeps.addAll(
+            depTarget.getDependencies().stream()
+                .map(Dependency::getTargetKey)
+                .collect(Collectors.toList()));
+      } else {
+        workspaceBuilder.directDeps.add(dep.getTargetKey());
       }
     }
 
