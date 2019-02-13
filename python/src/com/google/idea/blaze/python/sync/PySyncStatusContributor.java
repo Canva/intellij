@@ -22,7 +22,6 @@ import com.intellij.ide.projectView.ProjectViewNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import com.jetbrains.python.psi.PyFile;
 import javax.annotation.Nullable;
 
 class PySyncStatusContributor implements SyncStatusContributor {
@@ -34,7 +33,7 @@ class PySyncStatusContributor implements SyncStatusContributor {
       return null;
     }
     PsiFile psiFile = ((PsiFileNode) node).getValue();
-    if (!(psiFile instanceof PyFile)) {
+    if (!(psiFile.getClass().getName().equals("com.jetbrains.python.psi.PyFile"))) {
       return null;
     }
     return new PsiFileAndName(psiFile, psiFile.getName());
