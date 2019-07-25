@@ -31,7 +31,7 @@ import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.actions.ConfigurationContext;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.ide.DataManager;
-import com.intellij.idea.CommandLineApplication.MyDataManagerImpl;
+import com.intellij.ide.impl.HeadlessDataManager;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -60,7 +60,7 @@ public class BlazeRunConfigurationProducerTestCase extends BlazeIntegrationTestC
     // We rely on a functional DataManager in run configuration tests to recognize when multiple
     // psi elements are selected.
     DataManager dataManager =
-        new MyDataManagerImpl() {
+        new HeadlessDataManager() {
           DataContext dataContext;
 
           @Override

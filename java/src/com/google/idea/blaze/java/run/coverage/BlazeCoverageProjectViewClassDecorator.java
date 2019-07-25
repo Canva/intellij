@@ -38,13 +38,16 @@ import javax.annotation.Nullable;
 public class BlazeCoverageProjectViewClassDecorator
     extends AbstractCoverageProjectViewNodeDecorator {
 
-  public BlazeCoverageProjectViewClassDecorator(CoverageDataManager coverageDataManager) {
-    super(coverageDataManager);
+  private final Project project;
+
+  public BlazeCoverageProjectViewClassDecorator(Project project) {
+    super(project);
+    this.project = project;
   }
 
   @Override
   public void decorate(@SuppressWarnings("rawtypes") ProjectViewNode node, PresentationData data) {
-    CoverageDataManager manager = getCoverageDataManager();
+    CoverageDataManager manager = getCoverageDataManager(node.getProject());
     CoverageSuitesBundle currentSuite = manager.getCurrentSuitesBundle();
 
     Project project = node.getProject();
@@ -68,7 +71,7 @@ public class BlazeCoverageProjectViewClassDecorator
     if (file == null) {
       return;
     }
-    CoverageDataManager manager = getCoverageDataManager();
+    CoverageDataManager manager = getCoverageDataManager(project);
     CoverageSuitesBundle currentSuite = manager.getCurrentSuitesBundle();
     Project project = file.getProject();
     BlazeCoverageAnnotator annotator = getAnnotator(project, currentSuite);

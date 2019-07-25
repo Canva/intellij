@@ -52,6 +52,20 @@ config_setting(
 )
 
 config_setting(
+    name = "intellij-2019.2",
+    values = {
+        "define": "ij_product=intellij-2019.2",
+    },
+)
+
+config_setting(
+    name = "intellij-ue-2019.2",
+    values = {
+        "define": "ij_product=intellij-ue-2019.2",
+    },
+)
+
+config_setting(
     name = "android-studio-latest",
     values = {
         "define": "ij_product=android-studio-latest",
@@ -242,6 +256,7 @@ java_library(
         "clion-2019.1": ["@jsr305_annotations//jar"],
         "clion-2019.2": ["@jsr305_annotations//jar"],
         "intellij-ue-2019.1": ["@jsr305_annotations//jar"],
+        "intellij-ue-2019.2": ["@jsr305_annotations//jar"],
         "default": [":plugin_api"],
     }),
 )

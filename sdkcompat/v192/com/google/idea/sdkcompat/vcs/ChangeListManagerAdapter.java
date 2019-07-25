@@ -40,23 +40,6 @@ public class ChangeListManagerAdapter {
   @VisibleForTesting
   public abstract static class TestChangeListManagerAdapter extends ChangeListManager {
 
-    @Override // #api183: added in 2019.1
-    // This is harder to @SuppressWarnings("MissingOverride") since IgnoredFileDescriptor
-    // is a new type in 2019.1
-    public Set<IgnoredFileDescriptor> getPotentiallyIgnoredFiles() {
-      throw new UnsupportedOperationException("TestChangeListManager#getPotentiallyIgnoredFiles()");
-    }
-
-    @Override // #api183: added in 2019.1
-    public boolean isPotentiallyIgnoredFile(VirtualFile virtualFile) {
-      throw new UnsupportedOperationException("TestChangeListManager#isPotentiallyIgnoredFile()");
-    }
-
-    @Override // #api183: added in 2019.1
-    public boolean isVcsIgnoredFile(VirtualFile virtualFile) {
-      throw new UnsupportedOperationException("TestChangeListManager#isVcsIgnoredFile()");
-    }
-
     @Override // #api183: wildcard added to List<> in 2019.1
     public void commitChanges(LocalChangeList changeList, List<? extends Change> changes) {
       throw new UnsupportedOperationException("TestChangeListManager#commitChanges()");

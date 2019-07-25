@@ -57,7 +57,7 @@ public final class Specs2Utils {
   @Nullable
   public static String getSpecs2ScopeName(ScInfixExpr testScope) {
     String scopeName =
-        TestConfigurationUtil.getStaticTestNameOrDefault(testScope.getFirstChild(), null, false);
+        TestConfigurationUtil.getStaticTestName(testScope.getFirstChild(), false).getOrElse(null);
     if (scopeName == null) {
       return null;
     }
@@ -66,7 +66,7 @@ public final class Specs2Utils {
 
   @Nullable
   public static String getSpecs2TestName(ScInfixExpr testCase) {
-    return TestConfigurationUtil.getStaticTestNameOrDefault(testCase.getFirstChild(), null, false);
+    return TestConfigurationUtil.getStaticTestName(testCase.getFirstChild(), false).getOrElse(null);
   }
 
   @Nullable

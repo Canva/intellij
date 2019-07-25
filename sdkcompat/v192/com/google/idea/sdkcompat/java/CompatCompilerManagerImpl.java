@@ -53,7 +53,7 @@ public abstract class CompatCompilerManagerImpl extends CompilerManagerImpl {
     return super.compileJavaCode(
         options,
         platformCp,
-        updateClasspath(project, classpath),
+        updateClasspath(project, (Collection<File>)classpath),
         upgradeModulePath,
         modulePath,
         sourcePath,

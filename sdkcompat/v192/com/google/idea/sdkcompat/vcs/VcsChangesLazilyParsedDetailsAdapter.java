@@ -29,13 +29,12 @@ import com.intellij.vcs.log.VcsUser;
 import com.intellij.vcs.log.impl.VcsChangesLazilyParsedDetails;
 import com.intellij.vcs.log.impl.VcsFileStatusInfo;
 import java.util.List;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 
 /** #api182: adapter for changes to VcsChangesLazilyParsedDetails in 2018.3. */
 public abstract class VcsChangesLazilyParsedDetailsAdapter<V extends VcsRevisionNumber>
     extends VcsChangesLazilyParsedDetails {
-
-  protected final V vcsRevisionNumber;
 
   protected VcsChangesLazilyParsedDetailsAdapter(
       Project project,
@@ -47,37 +46,21 @@ public abstract class VcsChangesLazilyParsedDetailsAdapter<V extends VcsRevision
       String commitMessage,
       VcsUser author,
       long time,
-      List<List<FileStatusInfo>> reportedChanges) {
-    super(hash, parentsHashes, time, root, subject, author, commitMessage, author, time);
-    this.vcsRevisionNumber = vcsRevisionNumber;
-    myChanges.set(
-        reportedChanges.isEmpty()
-            ? EMPTY_CHANGES
-            : new UnparsedChanges(project, convert(reportedChanges)));
-  }
-
-  /** #api182: adapter for changes to VcsChangesLazilyParsedDetails in 2018.3. */
-  public static class FileStatusInfo {
-
-    private final Type type;
-    private final String firstPath;
-    private final String secondPath;
-
-    public FileStatusInfo(Type type, String firstPath, @Nullable String secondPath) {
-      this.type = type;
-      this.firstPath = firstPath;
-      this.secondPath = secondPath;
-    }
-  }
-
-  private static List<List<VcsFileStatusInfo>> convert(List<List<FileStatusInfo>> changes) {
-    return changes.stream()
-        .map(
-            l ->
-                l.stream()
-                    .map(f -> new VcsFileStatusInfo(f.type, f.firstPath, f.secondPath))
-                    .collect(toImmutableList()))
-        .collect(toImmutableList());
+      List<List<VcsFileStatusInfo>> reportedChanges,
+      ChangesParser changesParser) {
+    super(
+        project,
+        hash,
+        parentsHashes,
+        time,
+        root,
+        subject,
+        author,
+        commitMessage,
+        author,
+        time,
+        reportedChanges,
+        changesParser);
   }
 
   protected abstract List<V> getParents(V revision);
@@ -94,67 +77,11 @@ public abstract class VcsChangesLazilyParsedDetailsAdapter<V extends VcsRevision
   protected abstract FileStatus renamedFileStatus();
 
   private class UnparsedChanges extends VcsChangesLazilyParsedDetails.UnparsedChanges {
-    private UnparsedChanges(Project project, List<List<VcsFileStatusInfo>> changesOutput) {
-      super(project, changesOutput);
-    }
-
-    @Override
-    protected List<Change> parseStatusInfo(List<VcsFileStatusInfo> changes, int parentIndex) {
-      List<Change> result = ContainerUtil.newArrayList();
-      for (VcsFileStatusInfo info : changes) {
-        String filePath = info.getFirstPath();
-        V parentRevision =
-            getParents(vcsRevisionNumber).isEmpty()
-                ? null
-                : getParents(vcsRevisionNumber).get(parentIndex);
-        switch (info.getType()) {
-          case MODIFICATION:
-            result.add(
-                createChange(
-                    myProject,
-                    getRoot(),
-                    filePath,
-                    parentRevision,
-                    filePath,
-                    vcsRevisionNumber,
-                    FileStatus.MODIFIED));
-            break;
-          case NEW:
-            result.add(
-                createChange(
-                    myProject,
-                    getRoot(),
-                    null,
-                    null,
-                    filePath,
-                    vcsRevisionNumber,
-                    FileStatus.ADDED));
-            break;
-          case DELETED:
-            result.add(
-                createChange(
-                    myProject,
-                    getRoot(),
-                    filePath,
-                    parentRevision,
-                    null,
-                    vcsRevisionNumber,
-                    FileStatus.DELETED));
-            break;
-          case MOVED:
-            result.add(
-                createChange(
-                    myProject,
-                    getRoot(),
-                    filePath,
-                    parentRevision,
-                    info.getSecondPath(),
-                    vcsRevisionNumber,
-                    renamedFileStatus()));
-            break;
-        }
-      }
-      return result;
+    private UnparsedChanges(
+        Project project,
+        List<List<VcsFileStatusInfo>> changesOutput,
+        BiFunction<List<VcsFileStatusInfo>,Integer,List<Change>> parser) {
+      super(project, changesOutput, parser);
     }
   }
 }
