@@ -70,7 +70,6 @@ intellij_plugin(
         "//dart:plugin_library",
         "//golang:plugin_library",
         "//java:plugin_library",
-        "//javascript:plugin_library",
         "//kotlin:plugin_library",
         "//plugin_dev:plugin_library",
         "//python:plugin_library",
