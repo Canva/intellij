@@ -80,7 +80,6 @@ intellij_plugin(
         intellij = [],
         intellij_ue = [
             "//golang:plugin_library",
-            "//javascript:plugin_library",
         ],
     ),
 )
