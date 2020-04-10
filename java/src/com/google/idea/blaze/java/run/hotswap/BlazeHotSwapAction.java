@@ -47,13 +47,14 @@ public class BlazeHotSwapAction extends AnAction {
     }
 
     private static void replaceAction() {
-      AnAction delegate = ActionManager.getInstance().getAction(ACTION_ID);
+      ActionManager actionManager = ActionManager.getInstance();
+      AnAction delegate = actionManager.getAction(ACTION_ID);
       if (delegate == null) {
         // HotSwapAction not registered by default for Android Studio, though still in the classpath
         delegate = new HotSwapAction();
       }
       ReplaceActionHelper.conditionallyReplaceAction(
-          ACTION_ID, new BlazeHotSwapAction(delegate), Blaze::isBlazeProject);
+          actionManager, ACTION_ID, new BlazeHotSwapAction(delegate), Blaze::isBlazeProject);
     }
   }
 

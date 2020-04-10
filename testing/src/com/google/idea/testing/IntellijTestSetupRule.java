@@ -82,8 +82,6 @@ public class IntellijTestSetupRule extends ExternalResource {
     } catch (Throwable e) {
       throw new RuntimeException(e);
     }
-
-    UIUtil.removeLeakingAppleListeners();
   }
 
   private static boolean isRunThroughBlaze() {

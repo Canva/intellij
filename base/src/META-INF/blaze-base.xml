@@ -91,7 +91,7 @@
     <action id="Blaze.ExportRunConfigurations"
       class="com.google.idea.blaze.base.run.exporter.ExportRunConfigurationAction"
       text="Export Run Configurations"
-      icon="AllIcons.Actions.Export">
+      icon="AllIcons.ToolbarDecorator.Export">
     </action>
     <action id="Blaze.FileGitHubIssueAction"
         class="com.google.idea.blaze.base.actions.FileGitHubIssueAction"
@@ -110,8 +110,9 @@
       <add-to-group group-id="FileOpenGroup" relative-to-action="OpenFile" anchor="after"/>
     </action>
 
-    <group id="Blaze.MainMenuActionGroup" class="com.google.idea.blaze.base.actions.BlazeMenuGroup">
-      <add-to-group group-id="MainMenu" anchor="before" relative-to-action="HelpMenu"/>
+    <group id="Blaze.MainMenuActionGroup" class="com.google.idea.blaze.base.actions.BlazeMenuGroup" text="_BlazeAction"
+           popup="true" icon="BlazeIcons.Logo">
+      <add-to-group group-id="ToolsMenu" anchor="before" relative-to-action="ExternalToolsGroup"/>
       <group id ="Blaze.SyncMenuGroup" text="_Sync" popup="true">
         <reference id="Blaze.IncrementalSyncProject"/>
         <reference id="Blaze.FullSyncProject"/>
@@ -156,6 +157,10 @@
       <reference ref="Blaze.CopyBlazeTargetPathAction"/>
     </group>
   </actions>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <actionConfigurationCustomizer implementation="com.google.idea.blaze.base.plugin.BlazeActionCustomizer"/>
+  </extensions>
 
   <extensions defaultExtensionNs="com.intellij">
     <postStartupActivity implementation="com.google.idea.blaze.base.sync.BlazeSyncStartupActivity"/>
@@ -370,9 +375,6 @@
   </extensionPoints>
 
   <application-components>
-    <component>
-      <implementation-class>com.google.idea.blaze.base.plugin.BlazeSpecificInitializer</implementation-class>
-    </component>
     <component>
       <interface-class>com.google.idea.common.experiments.ExperimentService</interface-class>
       <implementation-class>com.google.idea.blaze.base.experiments.BlazeExperimentService</implementation-class>

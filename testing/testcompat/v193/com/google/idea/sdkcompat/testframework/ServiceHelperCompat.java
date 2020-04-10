@@ -17,8 +17,8 @@ package com.google.idea.sdkcompat.testframework;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.ComponentManager;
-import com.intellij.openapi.components.impl.ComponentManagerImpl;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.serviceContainer.ComponentManagerImpl;
 import com.intellij.testFramework.ServiceContainerUtil;
 import org.picocontainer.MutablePicoContainer;
 

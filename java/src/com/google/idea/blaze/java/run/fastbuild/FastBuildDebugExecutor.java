@@ -19,6 +19,7 @@ import com.google.idea.blaze.base.settings.Blaze;
 import com.intellij.execution.executors.DefaultDebugExecutor;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.LayeredIcon;
 import icons.BlazeIcons;
 import javax.swing.Icon;
@@ -69,7 +70,7 @@ final class FastBuildDebugExecutor extends DefaultDebugExecutor {
 
   @Override
   public Icon getDisabledIcon() {
-    return new LayeredIcon(AllIcons.Process.DisabledDebug, BlazeIcons.LightningOverlay);
+    return new LayeredIcon(IconLoader.getDisabledIcon(getIcon()), BlazeIcons.LightningOverlay);
   }
 
   @Override

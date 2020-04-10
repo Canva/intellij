@@ -130,7 +130,7 @@ public final class AddDirectoryToProjectAction extends BlazeProjectAction {
           WorkspaceFileTextField.create(
               workspacePathResolver, descriptor, PATH_FIELD_WIDTH, myDisposable);
       JBLabel directoryLabel =
-          new JBLabel("Directory:", AllIcons.Modules.SourceFolder, SwingConstants.LEFT);
+          new JBLabel("Directory:", AllIcons.Modules.SourceRoot, SwingConstants.LEFT);
       JPanel directoryPanel =
           SwingHelper.newHorizontalPanel(
               Component.TOP_ALIGNMENT, directoryLabel, fileTextField.getField());

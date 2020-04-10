@@ -20,13 +20,13 @@ import com.intellij.lang.LanguageExtensionPoint;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.impl.ComponentManagerImpl;
 import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.extensions.ExtensionsArea;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.serviceContainer.ComponentManagerImpl;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.defaults.UnsatisfiableDependenciesException;
 
