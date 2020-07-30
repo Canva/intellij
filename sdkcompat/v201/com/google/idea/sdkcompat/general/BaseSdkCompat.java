@@ -134,7 +134,7 @@ public final class BaseSdkCompat {
   /** #api193: project opening requirements changed in 2020.1. */
   public static void openProject(Project project, Path projectFile) {
     PlatformProjectOpenProcessor.openExistingProject(
-        /* file= */ projectFile, /* projectDir= */ projectFile, new OpenProjectTask(project));
+        /* file= */ projectFile, /* projectDir= */ projectFile, OpenProjectTask.withCreatedProject(project));
   }
 
   /** #api193: auto-disposed with UI component in 2020.1+ */

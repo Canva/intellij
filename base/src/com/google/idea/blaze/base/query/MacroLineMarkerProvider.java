@@ -69,7 +69,7 @@ public class MacroLineMarkerProvider implements LineMarkerProvider {
 
   @Override
   @SuppressWarnings("rawtypes")
-  public void collectSlowLineMarkers(List<PsiElement> elements, Collection<LineMarkerInfo> result) {
+  public void collectSlowLineMarkers(List<? extends PsiElement> elements, Collection<? super LineMarkerInfo<?>> result) {
     if (!enabled.getValue()) {
       return;
     }
@@ -155,7 +155,7 @@ public class MacroLineMarkerProvider implements LineMarkerProvider {
   }
 
   @Nullable
-  private static BuildFile getContainingFile(List<PsiElement> elements) {
+  private static BuildFile getContainingFile(List<? extends PsiElement> elements) {
     PsiFile file = elements.isEmpty() ? null : elements.get(0).getContainingFile();
     return file instanceof BuildFile ? (BuildFile) file : null;
   }

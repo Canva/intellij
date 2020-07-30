@@ -26,7 +26,7 @@ http_archive(
 http_archive(
     name = "intellij_ce_2020_2",
     build_file = "@//intellij_platform_sdk:BUILD.idea202",
-    sha256 = "396f0045a713f224015c082924fc5c71be0e029effa2fd7bd3fa65632a55a18c",
+    sha256 = "19eed1ff0d6aa7f88ff9fd6da336d79938207f793a80810fb2ba205229ad1f4a",
     url = "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/2020.2/ideaIC-2020.2.zip",
 )
 
