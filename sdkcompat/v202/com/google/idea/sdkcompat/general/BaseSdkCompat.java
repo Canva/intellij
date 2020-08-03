@@ -31,13 +31,12 @@ import com.intellij.ui.EditorNotificationsImpl;
 import com.intellij.ui.EditorTextField;
 import com.intellij.usages.Usage;
 import com.intellij.util.Processor;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import javax.swing.*;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
-import javax.swing.Icon;
 
 /** Provides SDK compatibility shims for base plugin API classes, available to all IDEs. */
 public final class BaseSdkCompat {
@@ -100,12 +99,12 @@ public final class BaseSdkCompat {
   public interface LineMarkerProviderAdapter extends LineMarkerProvider {
 
     @Override
-    default LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
+    default LineMarkerInfo<?> getLineMarkerInfo(PsiElement element) {
       return null;
     }
 
     @Override
-    default void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+    default void collectSlowLineMarkers(List<? extends PsiElement> elements, Collection<? super LineMarkerInfo<?>> result) {
       doCollectSlowLineMarkers(elements, result);
     }
 
@@ -154,7 +153,7 @@ public final class BaseSdkCompat {
   /** #api193: project opening requirements changed in 2020.1. */
   public static void openProject(Project project, Path projectFile) {
     PlatformProjectOpenProcessor.openExistingProject(
-        /* file= */ projectFile, /* projectDir= */ projectFile, new OpenProjectTask(project));
+        /* file= */ projectFile, /* projectDir= */ projectFile, OpenProjectTask.withCreatedProject(project));
   }
 
   /** #api193: auto-disposed with UI component in 2020.1+ */
