@@ -84,6 +84,7 @@ java_library(
         "android-studio-4.0": glob(["sdkcompat/as40/**/*.java"]),
         "android-studio-4.1": glob(["sdkcompat/as41/**/*.java"]),
         "android-studio-4.2": glob(["sdkcompat/as42/**/*.java"]),
+        "default": [],
     }),
     resources = glob(["resources/**/*"]),
     deps = [
