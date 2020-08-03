@@ -239,7 +239,7 @@
     <projectService serviceImplementation="com.google.idea.blaze.base.ui.problems.ProblemsViewConfiguration"/>
     <projectService serviceImplementation="com.google.idea.blaze.base.sync.BlazeSyncModificationTracker"/>
     <projectService serviceImplementation="com.google.idea.blaze.base.filecache.RemoteOutputsCache"/>
-    <projectService serviceImplementation="com.google.idea.blaze.base.query.MacroLineMarkerProvider$FileDataProvider"/>
+    <projectService serviceImplementation="com.google.idea.blaze.sdkcompat.MacroLineMarkerProvider$FileDataProvider"/>
     <projectService serviceImplementation="com.google.idea.blaze.base.query.BlazeQueryOutputBaseProvider"/>
     <projectService serviceImplementation="com.google.idea.blaze.base.sync.autosync.ProjectTargetManagerImpl"/>
     <configurationType implementation="com.google.idea.blaze.base.run.BlazeCommandRunConfigurationType"/>
@@ -278,8 +278,8 @@
     <consoleFilterProvider implementation="com.google.idea.blaze.base.run.filter.GenericFileMessageFilter$Provider"/>
     <consoleFilterProvider implementation="com.google.idea.blaze.base.run.filter.TestLogFilter$Provider"/>
     <codeInsight.lineMarkerProvider
-        language="BUILD"
-        implementationClass="com.google.idea.blaze.base.query.MacroLineMarkerProvider"/>
+            language="BUILD"
+            implementationClass="com.google.idea.sdkcompat.query.MacroLineMarkerProvider"/>
     <runLineMarkerContributor
         language="BUILD"
         implementationClass="com.google.idea.blaze.base.run.producers.BuildFileRunLineMarkerContributor"/>

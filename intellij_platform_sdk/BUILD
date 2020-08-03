@@ -97,10 +97,25 @@ config_setting(
 )
 
 config_setting(
+    name = "intellij-2020.2",
+    values = {
+        "define": "ij_product=intellij-2020.2",
+    },
+)
+
+config_setting(
     name = "intellij-2020.1-mac",
     values = {
         "cpu": "darwin_x86_64",
         "define": "ij_product=intellij-2020.1",
+    },
+)
+
+config_setting(
+    name = "intellij-2020.2-mac",
+    values = {
+        "cpu": "darwin_x86_64",
+        "define": "ij_product=intellij-2020.2",
     },
 )
 
@@ -127,10 +142,25 @@ config_setting(
 )
 
 config_setting(
+    name = "intellij-ue-2020.2",
+    values = {
+        "define": "ij_product=intellij-ue-2020.2",
+    },
+)
+
+config_setting(
     name = "intellij-ue-2020.1-mac",
     values = {
         "cpu": "darwin_x86_64",
         "define": "ij_product=intellij-ue-2020.1",
+    },
+)
+
+config_setting(
+    name = "intellij-ue-2020.2-mac",
+    values = {
+        "cpu": "darwin_x86_64",
+        "define": "ij_product=intellij-ue-2020.2",
     },
 )
 
