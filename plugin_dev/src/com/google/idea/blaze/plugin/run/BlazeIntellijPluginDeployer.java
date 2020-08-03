@@ -35,6 +35,7 @@ import com.google.repackaged.protobuf.TextFormat;
 import com.intellij.concurrency.AsyncUtil;
 import com.intellij.execution.ExecutionException;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.plugins.PluginManagerCore;
 import com.intellij.openapi.util.BuildNumber;
 import com.intellij.openapi.util.Key;
@@ -210,7 +211,7 @@ class BlazeIntellijPluginDeployer {
   @Nullable
   private static String readPluginIdFromJar(String buildNumber, File jar)
       throws ExecutionException {
-    IdeaPluginDescriptor pluginDescriptor = PluginManagerCore.loadDescriptor(jar, "plugin.xml");
+    IdeaPluginDescriptor pluginDescriptor = PluginManager.loadDescriptor(jar.toPath(), PluginManagerCore.PLUGIN_XML);
     if (pluginDescriptor == null) {
       return null;
     }
