@@ -1,5 +1,7 @@
 package com.google.idea.sdkcompat.general;
 
+import com.intellij.codeInsight.daemon.LineMarkerInfo;
+import com.intellij.codeInsight.daemon.LineMarkerProvider;
 import com.intellij.codeInsight.template.impl.TemplateManagerImpl;
 import com.intellij.dvcs.branch.BranchType;
 import com.intellij.dvcs.branch.DvcsBranchManager;
@@ -29,8 +31,11 @@ import com.intellij.ui.EditorNotificationsImpl;
 import com.intellij.ui.EditorTextField;
 import com.intellij.usages.Usage;
 import com.intellij.util.Processor;
+import org.jetbrains.annotations.NotNull;
+
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 import javax.swing.Icon;
 
@@ -90,6 +95,21 @@ public final class BaseSdkCompat {
         AbstractTreeNode<?> parent,
         Collection<AbstractTreeNode<?>> children,
         ViewSettings settings);
+  }
+
+  public interface LineMarkerProviderAdapter extends LineMarkerProvider {
+
+    @Override
+    default LineMarkerInfo<?> getLineMarkerInfo(@NotNull PsiElement element) {
+      return null;
+    }
+
+    @Override
+    default void collectSlowLineMarkers(@NotNull List<PsiElement> elements, @NotNull Collection<LineMarkerInfo> result) {
+      doCollectSlowLineMarkers(elements, result);
+    }
+
+    void doCollectSlowLineMarkers(List<? extends PsiElement> elements, Collection<? super LineMarkerInfo<?>> result);
   }
 
   /** #api193: changed in 2020.1 */

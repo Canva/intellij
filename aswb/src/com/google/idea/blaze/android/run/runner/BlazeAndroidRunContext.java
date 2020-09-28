@@ -25,7 +25,7 @@ import com.android.tools.idea.run.editor.AndroidDebuggerState;
 import com.android.tools.idea.run.tasks.DebugConnectorTask;
 import com.android.tools.idea.run.tasks.LaunchTask;
 import com.android.tools.idea.run.tasks.LaunchTasksProvider;
-import com.android.tools.idea.run.util.ProcessHandlerLaunchStatus;
+import com.android.tools.idea.run.util.LaunchStatus;
 import com.google.common.collect.ImmutableList;
 import com.intellij.execution.ExecutionException;
 import java.util.Set;
@@ -45,10 +45,7 @@ public interface BlazeAndroidRunContext {
 
   ApplicationIdProvider getApplicationIdProvider() throws ExecutionException;
 
-  LaunchTasksProvider getLaunchTasksProvider(
-      LaunchOptions.Builder launchOptionsBuilder,
-      boolean isDebug,
-      BlazeAndroidRunConfigurationDebuggerManager debuggerManager)
+  LaunchTasksProvider getLaunchTasksProvider(LaunchOptions.Builder launchOptionsBuilder)
       throws ExecutionException;
 
   /** Returns the tasks to deploy the application. */
@@ -63,7 +60,7 @@ public interface BlazeAndroidRunContext {
       @NotNull String contributorsAmStartOptions,
       AndroidDebugger androidDebugger,
       AndroidDebuggerState androidDebuggerState,
-      ProcessHandlerLaunchStatus processHandlerLaunchStatus)
+      LaunchStatus launchStatus)
       throws ExecutionException;
 
   /** Returns the task to connect the debugger. */

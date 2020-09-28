@@ -18,8 +18,6 @@ package com.google.idea.blaze.android.run;
 import com.android.tools.idea.run.ValidationError;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.idea.blaze.android.run.runner.BlazeAndroidRunConfigurationDebuggerManager;
-import com.google.idea.blaze.android.run.runner.BlazeAndroidRunConfigurationDeployTargetManager;
 import com.google.idea.blaze.android.run.state.DebuggerSettingsState;
 import com.google.idea.blaze.base.command.BlazeCommandName;
 import com.google.idea.blaze.base.command.BlazeFlags;
@@ -38,10 +36,8 @@ import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import java.awt.Component;
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.swing.JComponent;
 import org.jdom.Element;
-import org.jetbrains.android.facet.AndroidFacet;
 
 /** A shared state class for run configurations targeting Blaze Android rules. */
 public class BlazeAndroidRunConfigurationCommonState implements RunConfigurationState {
@@ -55,30 +51,17 @@ public class BlazeAndroidRunConfigurationCommonState implements RunConfiguration
   private static final ImmutableList<String> NATIVE_DEBUG_FLAGS =
       ImmutableList.of("--fission=no", "-c", "dbg");
 
-  private final BlazeAndroidRunConfigurationDeployTargetManager deployTargetManager;
-  private final BlazeAndroidRunConfigurationDebuggerManager debuggerManager;
-
   private final RunConfigurationFlagsState blazeFlags;
   private final RunConfigurationFlagsState exeFlags;
   private final DebuggerSettingsState debuggerSettings;
 
-  public BlazeAndroidRunConfigurationCommonState(String buildSystemName, boolean isAndroidTest) {
-    this.deployTargetManager = new BlazeAndroidRunConfigurationDeployTargetManager(isAndroidTest);
+  public BlazeAndroidRunConfigurationCommonState(String buildSystemName) {
     this.blazeFlags =
         new RunConfigurationFlagsState(USER_BLAZE_FLAG_TAG, buildSystemName + " flags:");
     this.exeFlags =
         new RunConfigurationFlagsState(
             USER_EXE_FLAG_TAG, "Executable flags (mobile-install only):");
     this.debuggerSettings = new DebuggerSettingsState(false);
-    this.debuggerManager = new BlazeAndroidRunConfigurationDebuggerManager(debuggerSettings);
-  }
-
-  public BlazeAndroidRunConfigurationDeployTargetManager getDeployTargetManager() {
-    return deployTargetManager;
-  }
-
-  public BlazeAndroidRunConfigurationDebuggerManager getDebuggerManager() {
-    return debuggerManager;
   }
 
   public RunConfigurationFlagsState getBlazeFlagsState() {
@@ -117,17 +100,8 @@ public class BlazeAndroidRunConfigurationCommonState implements RunConfiguration
    * We collect errors rather than throwing to avoid missing fatal errors by exiting early for a
    * warning.
    */
-  public List<ValidationError> validate(@Nullable AndroidFacet facet) {
+  public List<ValidationError> validate(Project project) {
     List<ValidationError> errors = Lists.newArrayList();
-    // If facet is null, we can't validate the managers, but that's fine because
-    // BlazeAndroidRunConfigurationValidationUtil.validateFacet will give a fatal error.
-    if (facet == null) {
-      return errors;
-    }
-
-    errors.addAll(deployTargetManager.validate(facet));
-    errors.addAll(debuggerManager.validate(facet));
-    Project project = facet.getModule().getProject();
     BlazeProjectData blazeProjectData =
         BlazeProjectDataManager.getInstance(project).getBlazeProjectData();
     if (blazeProjectData == null) {
@@ -153,11 +127,6 @@ public class BlazeAndroidRunConfigurationCommonState implements RunConfiguration
     blazeFlags.readExternal(element);
     exeFlags.readExternal(element);
     debuggerSettings.readExternal(element);
-
-    Element deployTargetStatesElement = element.getChild(DEPLOY_TARGET_STATES_TAG);
-    if (deployTargetStatesElement != null) {
-      deployTargetManager.readExternal(deployTargetStatesElement);
-    }
   }
 
   @Override
@@ -166,10 +135,8 @@ public class BlazeAndroidRunConfigurationCommonState implements RunConfiguration
     exeFlags.writeExternal(element);
     debuggerSettings.writeExternal(element);
 
+    // Clear out legacy deploy target state element.
     element.removeChildren(DEPLOY_TARGET_STATES_TAG);
-    Element deployTargetStatesElement = new Element(DEPLOY_TARGET_STATES_TAG);
-    deployTargetManager.writeExternal(deployTargetStatesElement);
-    element.addContent(deployTargetStatesElement);
   }
 
   @Override

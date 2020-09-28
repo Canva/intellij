@@ -143,22 +143,35 @@ public class BlazeApkBuildStepNormalBuild implements BlazeApkBuildStep {
           .submit(context);
     }
 
-    if (FETCH_REMOTE_APKS.getValue() && deployInfo != null) {
-      context.output(new StatusOutput("Downloading APKs..."));
+    if (FETCH_REMOTE_APKS.getValue() && deployInfo != null && apksRequireDownload(deployInfo)) {
+      context.output(new StatusOutput("Fetching remotely built APKs... "));
       ImmutableList<File> localApks =
           deployInfo.getApksToDeploy().stream()
-              .map(BlazeApkBuildStepNormalBuild::downloadApkIfRemote)
+              .map(apk -> BlazeApkBuildStepNormalBuild.downloadApkIfRemote(apk, context))
               .collect(ImmutableList.toImmutableList());
       deployInfo =
           new BlazeAndroidDeployInfo(
               deployInfo.getMergedManifest(), deployInfo.getTestTargetMergedManifest(), localApks);
+      context.output(new StatusOutput("Done fetching APKs."));
     }
   }
 
-  private static File downloadApkIfRemote(File apk) {
+  private static boolean apksRequireDownload(BlazeAndroidDeployInfo deployInfo) {
+    for (File apk : deployInfo.getApksToDeploy()) {
+      for (RemoteApkDownloader downloader : RemoteApkDownloader.EP_NAME.getExtensionList()) {
+        if (downloader.canDownload(apk)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static File downloadApkIfRemote(File apk, BlazeContext context) {
     for (RemoteApkDownloader downloader : RemoteApkDownloader.EP_NAME.getExtensionList()) {
       if (downloader.canDownload(apk)) {
         try {
+          context.output(new StatusOutput("Downloading " + apk.getPath()));
           File tempFile = Files.createTempFile("localcopy", apk.getName()).toFile();
           tempFile.deleteOnExit();
           downloader.download(apk, tempFile);

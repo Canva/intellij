@@ -26,8 +26,8 @@ import com.android.tools.idea.run.LaunchTaskRunner;
 import com.android.tools.idea.run.tasks.LaunchTasksProvider;
 import com.android.tools.idea.run.util.SwapInfo;
 import com.android.tools.idea.stats.RunStats;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidDeviceSelector.DeviceSession;
-import com.google.idea.blaze.android.run.runner.BlazeAndroidRunConfigurationDebuggerManager;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidRunContext;
 import com.google.idea.blaze.base.run.smrunner.SmRunnerUtils;
 import com.intellij.execution.DefaultExecutionResult;
@@ -41,7 +41,6 @@ import com.intellij.execution.runners.ProgramRunner;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.execution.ui.RunContentManager;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.util.Key;
 import javax.annotation.Nullable;
@@ -51,31 +50,22 @@ public final class BlazeAndroidRunState implements RunProfileState {
   private static final Key<ConsoleView> CONSOLE_VIEW_KEY =
       new Key<>("android.run.state.consoleview");
 
-  private final Module module;
   private final ExecutionEnvironment env;
   private final String launchConfigName;
   private final DeviceSession deviceSession;
   private final BlazeAndroidRunContext runContext;
   private final LaunchOptions.Builder launchOptionsBuilder;
-  private final boolean isDebug;
-  private final BlazeAndroidRunConfigurationDebuggerManager debuggerManager;
 
   public BlazeAndroidRunState(
-      Module module,
       ExecutionEnvironment env,
       LaunchOptions.Builder launchOptionsBuilder,
-      boolean isDebug,
       DeviceSession deviceSession,
-      BlazeAndroidRunContext runContext,
-      BlazeAndroidRunConfigurationDebuggerManager debuggerManager) {
-    this.module = module;
+      BlazeAndroidRunContext runContext) {
     this.env = env;
     this.launchConfigName = env.getRunProfile().getName();
     this.deviceSession = deviceSession;
     this.runContext = runContext;
     this.launchOptionsBuilder = launchOptionsBuilder;
-    this.isDebug = isDebug;
-    this.debuggerManager = debuggerManager;
   }
 
   @Nullable
@@ -109,7 +99,7 @@ public final class BlazeAndroidRunState implements RunProfileState {
     }
 
     LaunchTasksProvider launchTasksProvider =
-        runContext.getLaunchTasksProvider(launchOptionsBuilder, isDebug, debuggerManager);
+        runContext.getLaunchTasksProvider(launchOptionsBuilder);
 
     DeviceFutures deviceFutures = deviceSession.deviceFutures;
     assert deviceFutures != null;
@@ -136,7 +126,7 @@ public final class BlazeAndroidRunState implements RunProfileState {
       console =
           runContext
               .getConsoleProvider()
-              .createAndAttach(module.getProject(), processHandler, executor);
+              .createAndAttach(env.getProject(), processHandler, executor);
       // Stash the console. When we swap, we need the console, as that has the method to print a
       // hyperlink.
       // (If we only need normal text output, we can call ProcessHandler#notifyTextAvailable
@@ -154,7 +144,7 @@ public final class BlazeAndroidRunState implements RunProfileState {
 
     LaunchTaskRunner task =
         new LaunchTaskRunner(
-            module.getProject(),
+            env.getProject(),
             launchConfigName,
             applicationId,
             env.getExecutionTarget().getDisplayName(),
@@ -168,5 +158,10 @@ public final class BlazeAndroidRunState implements RunProfileState {
     ProgressManager.getInstance().run(task);
 
     return console == null ? null : new DefaultExecutionResult(console, processHandler);
+  }
+
+  @VisibleForTesting
+  public BlazeAndroidRunContext getRunContext() {
+    return runContext;
   }
 }

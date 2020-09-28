@@ -17,6 +17,7 @@ package com.google.idea.blaze.android.sync;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.idea.blaze.android.targetmapbuilder.NbAarTarget.aar_import;
 import static com.google.idea.blaze.android.targetmapbuilder.NbAndroidTarget.android_binary;
 import static com.google.idea.blaze.android.targetmapbuilder.NbAndroidTarget.android_library;
 import static com.google.idea.blaze.android.targetmapbuilder.NbTargetBuilder.targetMap;
@@ -26,8 +27,8 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.idea.blaze.android.BlazeAndroidIntegrationTestCase;
 import com.google.idea.blaze.android.MockSdkUtil;
+import com.google.idea.blaze.android.libraries.AarLibraryFileBuilder;
 import com.google.idea.blaze.android.sdk.BlazeSdkProvider;
-import com.google.idea.blaze.android.sync.projectstructure.BlazeAndroidProjectStructureSyncer;
 import com.google.idea.blaze.android.sync.sdk.AndroidSdkFromProjectView;
 import com.google.idea.blaze.android.sync.sdk.SdkUtil;
 import com.google.idea.blaze.base.TestUtils;
@@ -46,8 +47,6 @@ import com.google.idea.blaze.base.sync.data.BlazeDataStorage;
 import com.google.idea.blaze.base.sync.data.BlazeProjectDataManager;
 import com.google.idea.blaze.base.sync.projectstructure.ModuleFinder;
 import com.google.idea.blaze.java.sync.BlazeJavaSyncAugmenter;
-import com.google.idea.common.experiments.ExperimentService;
-import com.google.idea.common.experiments.MockExperimentService;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.impl.RunManagerImpl;
@@ -56,6 +55,9 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.LanguageLevelProjectExtension;
+import com.intellij.openapi.roots.OrderRootType;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.testFramework.IdeaTestUtil;
@@ -197,38 +199,6 @@ public class AndroidSyncTest extends BlazeAndroidIntegrationTestCase {
   }
 
   @Test
-  public void testSimpleSync_noRunConfigurationModules() {
-    TestProjectArguments testEnvArgument = createTestProjectArguments();
-
-    // Set the disabling experiment to 100% to effectively switch it on.
-    MockExperimentService experimentService = new MockExperimentService();
-    registerApplicationComponent(ExperimentService.class, experimentService);
-    experimentService.setFeatureRolloutExperiment(
-        BlazeAndroidProjectStructureSyncer.deprecateRunConfigModuleExperiment, 100);
-
-    setProjectView(
-        "directories:",
-        "  java/com/google",
-        "targets:",
-        "  //java/com/google:lib",
-        "android_sdk_platform: android-25");
-
-    setTargetMap(testEnvArgument.targetMap);
-    runBlazeSync(
-        BlazeSyncParams.builder()
-            .setTitle("Sync")
-            .setSyncMode(SyncMode.INCREMENTAL)
-            .setSyncOrigin("test")
-            .setBlazeBuildParams(BlazeBuildParams.fromProject(getProject()))
-            .setAddProjectViewTargets(true)
-            .build());
-    assertSyncSuccess(testEnvArgument.targetMap, testEnvArgument.javaRoot);
-    ModuleManager moduleManager = ModuleManager.getInstance(getProject());
-    assertThat(moduleManager.findModuleByName(BlazeDataStorage.WORKSPACE_MODULE_NAME)).isNotNull();
-    assertThat(moduleManager.findModuleByName("java.com.google.lib")).isNotNull();
-  }
-
-  @Test
   public void testSimpleSync() {
     TestProjectArguments testEnvArgument = createTestProjectArguments();
     setProjectView(
@@ -248,6 +218,84 @@ public class AndroidSyncTest extends BlazeAndroidIntegrationTestCase {
             .setAddProjectViewTargets(true)
             .build());
     assertSyncSuccess(testEnvArgument.targetMap, testEnvArgument.javaRoot);
+  }
+
+  /**
+   * Validates that when an aar_import rule is used with a srcjar attribute set, then the project
+   * library table includes the correct source root.
+   */
+  @Test
+  public void testAarImportWithSources() {
+    // Setup: a single aar_import target, along with an android_library that depends on it.
+    MockSdkUtil.registerSdk(workspace, "25");
+    setProjectView(
+        "directories:",
+        "  java/com/google",
+        "targets:",
+        "  //java/com/google:foo",
+        "  //java/com/google:lib",
+        "android_sdk_platform: android-25");
+
+    workspace.createFile(new WorkspacePath("java/com/google/foo.aar"));
+    workspace.createFile(new WorkspacePath("java/com/google/foo.srcjar"));
+    workspace.createDirectory(new WorkspacePath("java/com/google"));
+    workspace.createFile(
+        new WorkspacePath("java/com/google/Source.java"),
+        "package com.google;",
+        "public class Source {}");
+    workspace.createFile(
+        new WorkspacePath("java/com/google/Other.java"),
+        "package com.google;",
+        "public class Other {}");
+
+    // construct an aar file with a res file.
+    AarLibraryFileBuilder.aar(workspaceRoot, "java/com/google/foo.aar")
+        .src(
+            "res/values/colors.xml",
+            ImmutableList.of(
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>",
+                "<resources>",
+                "    <color name=\"aarColor\">#ffffff</color>",
+                "</resources>"))
+        .build();
+
+    // Most of the processing in the android plugin happens only when there is an android_library
+    // or an android_binary to import. So we set up a android_library that depends on the aar that
+    // we really want to test.
+    TargetMap targetMap =
+        targetMap(
+            aar_import("//java/com/google:foo")
+                .aar("foo.aar")
+                .generated_jar("_aar/an_aar/classes_and_libs_merged.jar", "foo.srcjar"),
+            android_library("//java/com/google:lib")
+                .java_toolchain_version("8")
+                .res("res/values/strings.xml")
+                .src("Source.java", "Other.java")
+                .dep("//java/com/google:foo"));
+    setTargetMap(targetMap);
+
+    // Run sync
+    runBlazeSync(
+        BlazeSyncParams.builder()
+            .setTitle("Sync")
+            .setSyncMode(SyncMode.INCREMENTAL)
+            .setSyncOrigin("test")
+            .setBlazeBuildParams(BlazeBuildParams.fromProject(getProject()))
+            .setAddProjectViewTargets(true)
+            .build());
+
+    // Validate results
+    errorCollector.assertNoIssues();
+
+    // There should be a single library corresponding to the aar.
+    Library[] libraries =
+        LibraryTablesRegistrar.getInstance().getLibraryTable(getProject()).getLibraries();
+    assertThat(libraries).hasLength(1);
+
+    // Its source root must point to the given srcjar.
+    String[] sourceUrls = libraries[0].getUrls(OrderRootType.SOURCES);
+    assertThat(sourceUrls).hasLength(1);
+    assertThat(sourceUrls[0]).endsWith("foo.srcjar!/");
   }
 
   private void assertSyncSuccess(TargetMap targetMap, VirtualFile javaRoot) {
@@ -276,15 +324,6 @@ public class AndroidSyncTest extends BlazeAndroidIntegrationTestCase {
         ModuleFinder.getInstance(getProject()).findModuleByName("java.com.google.lib");
     assertThat(resourceModule).isNotNull();
     assertThat(AndroidFacet.getInstance(resourceModule)).isNotNull();
-
-    // Check that a module was created for the run configuration
-    Module appModule =
-        ModuleFinder.getInstance(getProject()).findModuleByName("java.com.android.app");
-    if (BlazeAndroidProjectStructureSyncer.deprecateRunConfigModuleExperiment.isEnabled()) {
-      assertThat(appModule).isNull();
-    } else {
-      assertThat(appModule).isNotNull();
-    }
 
     // The default language level should be whatever is specified in the toolchain info
     assertThat(LanguageLevelProjectExtension.getInstance(getProject()).getLanguageLevel())

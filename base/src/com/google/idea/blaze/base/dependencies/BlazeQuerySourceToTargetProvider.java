@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.idea.blaze.base.async.process.ExternalTask;
 import com.google.idea.blaze.base.async.process.LineProcessingOutputStream;
+import com.google.idea.blaze.base.async.process.PrintOutputLineProcessor;
 import com.google.idea.blaze.base.bazel.BuildSystemProvider;
 import com.google.idea.blaze.base.command.BlazeCommand;
 import com.google.idea.blaze.base.command.BlazeCommandName;
@@ -39,7 +40,6 @@ import com.google.idea.blaze.base.sync.workspace.WorkspaceHelper;
 import com.google.idea.blaze.base.sync.workspace.WorkspacePathResolver;
 import com.google.idea.blaze.base.sync.workspace.WorkspacePathResolverProvider;
 import com.google.idea.common.experiments.BoolExperiment;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import java.io.File;
 import java.util.Collection;
@@ -55,8 +55,6 @@ import org.jetbrains.ide.PooledThreadExecutor;
  * <p>This is expected to be slow, so should be asynchronous and/or cancellable.
  */
 public class BlazeQuerySourceToTargetProvider implements SourceToTargetProvider {
-
-  private static final Logger logger = Logger.getInstance(BlazeQuerySourceToTargetProvider.class);
 
   /**
    * Currently disabled for performance reasons. SourceToTargetProvider is called often, in the
@@ -127,13 +125,7 @@ public class BlazeQuerySourceToTargetProvider implements SourceToTargetProvider 
             .addBlazeCommand(command)
             .context(context)
             .stdout(LineProcessingOutputStream.of(outputProcessor))
-            .stderr(
-                LineProcessingOutputStream.of(
-                    line -> {
-                      // errors are expected, so limit logging to info level
-                      logger.info(line);
-                      return true;
-                    }))
+            .stderr(LineProcessingOutputStream.of(new PrintOutputLineProcessor(context)))
             .build()
             .run();
     if (retVal != 0 && retVal != 3) {

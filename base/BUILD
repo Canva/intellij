@@ -21,11 +21,12 @@ java_library(
     visibility = ["//visibility:public"],
     deps = [
         "//common/actions",
-        "//common/binaryhelper",
-        "//common/concurrency",
         "//common/experiments",
         "//common/settings",
-        "//common/transactions",
+        "//common/util:binaryhelper",
+        "//common/util:concurrency",
+        "//common/util:platform",
+        "//common/util:transactions",
         "//intellij_platform_sdk:jsr305",
         "//intellij_platform_sdk:plugin_api",
         "//proto:proto_deps",
@@ -45,6 +46,8 @@ intellij_plugin_library(
         "intellij-ue-2019.3": [],
         "intellij-2020.1": ["sdkcompat/v201/META-INF/blaze-base-v201.xml"],
         "intellij-ue-2020.1": ["sdkcompat/v201/META-INF/blaze-base-v201.xml"],
+        "intellij-2020.2": ["sdkcompat/v202/META-INF/blaze-base-v202.xml"],
+        "intellij-ue-2020.2": ["sdkcompat/v202/META-INF/blaze-base-v202.xml"],
         "clion-2019.3": [],
         "clion-2020.1": ["sdkcompat/v201/META-INF/blaze-base-v201.xml"],
     }),
@@ -131,6 +134,34 @@ java_library(
     neverlink = 1,
     visibility = ["//visibility:public"],
     deps = [
+        "//intellij_platform_sdk:plugin_api",
+    ],
+)
+
+# neverlink library exposed so other plugins can optionally depend on it
+java_library(
+    name = "vfs_api",
+    srcs = [
+        "src/com/google/idea/blaze/base/io/VfsUtils.java",
+        "src/com/google/idea/blaze/base/io/VirtualFileSystemProvider.java",
+    ],
+    neverlink = 1,
+    deps = [
+        "//intellij_platform_sdk:jsr305",
+        "//intellij_platform_sdk:plugin_api",
+    ],
+)
+
+# neverlink library exposed so other plugins can optionally depend on it
+java_library(
+    name = "absolute_path_patcher_api",
+    srcs = [
+        "src/com/google/idea/blaze/base/io/AbsolutePathPatcher.java",
+    ],
+    neverlink = 1,
+    deps = [
+        ":vfs_api",
+        "//intellij_platform_sdk:jsr305",
         "//intellij_platform_sdk:plugin_api",
     ],
 )

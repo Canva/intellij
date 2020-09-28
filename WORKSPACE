@@ -23,6 +23,13 @@ http_archive(
     url = "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/2020.1.4/ideaIC-2020.1.4.zip",
 )
 
+http_archive(
+    name = "intellij_ce_2020_2",
+    build_file = "@//intellij_platform_sdk:BUILD.idea202",
+    sha256 = "19eed1ff0d6aa7f88ff9fd6da336d79938207f793a80810fb2ba205229ad1f4a",
+    url = "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIC/2020.2/ideaIC-2020.2.zip",
+)
+
 # The plugin api for IntelliJ UE 2019.3. This is required to run UE-specific
 # integration tests.
 http_archive(
@@ -41,6 +48,13 @@ http_archive(
     url = "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIU/2020.1.4/ideaIU-2020.1.4.zip",
 )
 
+http_archive(
+    name = "intellij_ue_2020_2",
+    build_file = "@//intellij_platform_sdk:BUILD.ue202",
+    sha256 = "451f05a42c2e27c79754a5e835c7a35217c301a24dfbeecc81ed2bfedaba9012",
+    url = "https://www.jetbrains.com/intellij-repository/releases/com/jetbrains/intellij/idea/ideaIU/2020.2/ideaIU-2020.2.zip",
+)
+
 # The plugin api for CLion 2019.3. This is required to build CLwB,
 # and run integration tests.
 http_archive(
@@ -55,8 +69,8 @@ http_archive(
 http_archive(
     name = "clion_2020_1",
     build_file = "@//intellij_platform_sdk:BUILD.clion201",
-    sha256 = "c7d52c5059883c71d3db1271e82f513d0a3d1054efb69cd7d1f3e99ac1b2ab60",
-    url = "https://download.jetbrains.com/cpp/CLion-2020.1.2.tar.gz",
+    sha256 = "a95c27cf367f7b698b4bb1f5649f8399c29f4031bcf6b133336d0d75169f4b97",
+    url = "https://download.jetbrains.com/cpp/CLion-2020.1.3.tar.gz",
 )
 
 # Python plugin for IntelliJ CE. Required at compile-time for python-specific features.
@@ -157,8 +171,8 @@ http_archive(
 http_archive(
     name = "android_studio_4_1",
     build_file = "@//intellij_platform_sdk:BUILD.android_studio41",
-    sha256 = "3820488d0a2fdaf5ca37aa793017899bd00b13f9b7c14ff509a75167be1ff699",
-    url = "https://dl.google.com/dl/android/studio/ide-zips/4.1.0.15/android-studio-ide-201.6692364-linux.tar.gz",
+    sha256 = "a9bc6647d83c0d22b370fd3d6c9b9cf9a9bbf41497586dfd510c4511bd5b67cf",
+    url = "https://dl.google.com/dl/android/studio/ide-zips/4.1.0.18/android-studio-ide-201.6823847-linux.tar.gz",
 )
 
 # The plugin api for Android Studio 4.2. This is required to build ASwB,
@@ -166,8 +180,8 @@ http_archive(
 http_archive(
     name = "android_studio_4_2",
     build_file = "@//intellij_platform_sdk:BUILD.android_studio42",
-    sha256 = "30f3f16a1b138bb47ebbac931182ec445b1cee7bc69ea9b0661cc43a4f33d81c",
-    url = "https://dl.google.com/dl/android/studio/ide-zips/4.2.0.5/android-studio-ide-201.6682321-linux.tar.gz",
+    sha256 = "df9e33c751b9e7227168a2a87a2062c72fec06cd85c6054fc626950f5a363ab1",
+    url = "https://dl.google.com/dl/android/studio/ide-zips/4.2.0.7/android-studio-ide-201.6720134-linux.tar.gz",
 )
 
 # LICENSE: Common Public License 1.0

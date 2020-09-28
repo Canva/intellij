@@ -28,7 +28,7 @@ import com.android.tools.idea.run.editor.AndroidDebuggerState;
 import com.android.tools.idea.run.editor.ProfilerState;
 import com.android.tools.idea.run.tasks.LaunchTask;
 import com.android.tools.idea.run.tasks.LaunchTasksProvider;
-import com.android.tools.idea.run.util.ProcessHandlerLaunchStatus;
+import com.android.tools.idea.run.util.LaunchStatus;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.idea.blaze.android.run.binary.BlazeAndroidBinaryApplicationIdProvider;
@@ -39,10 +39,8 @@ import com.google.idea.blaze.android.run.binary.UserIdHelper;
 import com.google.idea.blaze.android.run.deployinfo.BlazeAndroidDeployInfo;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidDeviceSelector;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidLaunchTasksProvider;
-import com.google.idea.blaze.android.run.runner.BlazeAndroidRunConfigurationDebuggerManager;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidRunContext;
 import com.google.idea.blaze.android.run.runner.BlazeApkBuildStep;
-import com.google.idea.blaze.base.model.primitives.Label;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -60,7 +58,7 @@ abstract class BlazeAndroidBinaryMobileInstallRunContextBase implements BlazeAnd
   protected final BlazeAndroidBinaryRunConfigurationState configState;
   protected final ConsoleProvider consoleProvider;
   protected final ApplicationIdProvider applicationIdProvider;
-  protected final BlazeApkBuildStepMobileInstall buildStep;
+  protected final BlazeApkBuildStep buildStep;
 
   public BlazeAndroidBinaryMobileInstallRunContextBase(
       Project project,
@@ -68,16 +66,14 @@ abstract class BlazeAndroidBinaryMobileInstallRunContextBase implements BlazeAnd
       RunConfiguration runConfiguration,
       ExecutionEnvironment env,
       BlazeAndroidBinaryRunConfigurationState configState,
-      Label label,
-      ImmutableList<String> blazeFlags,
-      ImmutableList<String> exeFlags) {
+      BlazeApkBuildStep buildStep) {
     this.project = project;
     this.facet = facet;
     this.runConfiguration = runConfiguration;
     this.env = env;
     this.configState = configState;
     this.consoleProvider = new BlazeAndroidBinaryConsoleProvider(project);
-    this.buildStep = new BlazeApkBuildStepMobileInstall(project, label, blazeFlags, exeFlags);
+    this.buildStep = buildStep;
     this.applicationIdProvider = new BlazeAndroidBinaryApplicationIdProvider(buildStep);
   }
 
@@ -122,13 +118,10 @@ abstract class BlazeAndroidBinaryMobileInstallRunContextBase implements BlazeAnd
   }
 
   @Override
-  public LaunchTasksProvider getLaunchTasksProvider(
-      LaunchOptions.Builder launchOptionsBuilder,
-      boolean isDebug,
-      BlazeAndroidRunConfigurationDebuggerManager debuggerManager)
+  public LaunchTasksProvider getLaunchTasksProvider(LaunchOptions.Builder launchOptionsBuilder)
       throws ExecutionException {
     return new BlazeAndroidLaunchTasksProvider(
-        project, this, applicationIdProvider, launchOptionsBuilder, isDebug, debuggerManager);
+        project, this, applicationIdProvider, launchOptionsBuilder);
   }
 
   @Override
@@ -138,7 +131,7 @@ abstract class BlazeAndroidBinaryMobileInstallRunContextBase implements BlazeAnd
       String contributorsAmStartOptions,
       AndroidDebugger androidDebugger,
       AndroidDebuggerState androidDebuggerState,
-      ProcessHandlerLaunchStatus processHandlerLaunchStatus)
+      LaunchStatus launchStatus)
       throws ExecutionException {
 
     String extraFlags = UserIdHelper.getFlagsFromUserId(userId);
@@ -161,7 +154,7 @@ abstract class BlazeAndroidBinaryMobileInstallRunContextBase implements BlazeAnd
         deployInfo.getMergedManifest(),
         configState,
         startActivityFlagsProvider,
-        processHandlerLaunchStatus);
+        launchStatus);
   }
 
   @Override

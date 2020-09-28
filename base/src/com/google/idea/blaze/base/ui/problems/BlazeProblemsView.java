@@ -15,6 +15,7 @@
  */
 package com.google.idea.blaze.base.ui.problems;
 
+import com.google.idea.blaze.base.io.AbsolutePathPatcher.AbsolutePathPatcherUtil;
 import com.google.idea.blaze.base.io.VfsUtils;
 import com.google.idea.blaze.base.scope.output.IssueOutput;
 import com.google.idea.blaze.base.settings.Blaze;
@@ -203,7 +204,8 @@ public class BlazeProblemsView {
    * virtual file if unsuccessful.
    */
   private static VirtualFile resolveSymlinks(VirtualFile file) {
-    VirtualFile resolved = file.getCanonicalFile();
+    VirtualFile resolved =
+        AbsolutePathPatcherUtil.fixPath(file.getCanonicalFile(), /* refreshIfNeeded= */ false);
     return resolved != null ? resolved : file;
   }
 

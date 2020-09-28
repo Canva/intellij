@@ -31,16 +31,15 @@ import com.android.tools.idea.run.tasks.DebugConnectorTask;
 import com.android.tools.idea.run.tasks.DeployTasksCompat;
 import com.android.tools.idea.run.tasks.LaunchTask;
 import com.android.tools.idea.run.tasks.LaunchTasksProvider;
-import com.android.tools.idea.run.util.ProcessHandlerLaunchStatus;
+import com.android.tools.idea.run.util.LaunchStatus;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.idea.blaze.android.run.binary.mobileinstall.BlazeApkBuildStepMobileInstall;
 import com.google.idea.blaze.android.run.deployinfo.BlazeAndroidDeployInfo;
-import com.google.idea.blaze.android.run.deployinfo.BlazeApkProvider;
+import com.google.idea.blaze.android.run.deployinfo.BlazeApkProviderService;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidDeviceSelector;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidLaunchTasksProvider;
-import com.google.idea.blaze.android.run.runner.BlazeAndroidRunConfigurationDebuggerManager;
 import com.google.idea.blaze.android.run.runner.BlazeAndroidRunContext;
 import com.google.idea.blaze.android.run.runner.BlazeApkBuildStep;
 import com.google.idea.blaze.android.run.runner.BlazeApkBuildStepNormalBuild;
@@ -104,7 +103,7 @@ class BlazeAndroidTestRunContext implements BlazeAndroidRunContext {
     }
 
     this.applicationIdProvider = new BlazeAndroidTestApplicationIdProvider(buildStep);
-    this.apkProvider = new BlazeApkProvider(project, buildStep);
+    this.apkProvider = BlazeApkProviderService.getInstance().getApkProvider(project, buildStep);
 
     BlazeTestUiSession testUiSession =
         canUseTestUi(env.getExecutor())
@@ -176,13 +175,10 @@ class BlazeAndroidTestRunContext implements BlazeAndroidRunContext {
   }
 
   @Override
-  public LaunchTasksProvider getLaunchTasksProvider(
-      LaunchOptions.Builder launchOptionsBuilder,
-      boolean isDebug,
-      BlazeAndroidRunConfigurationDebuggerManager debuggerManager)
+  public LaunchTasksProvider getLaunchTasksProvider(LaunchOptions.Builder launchOptionsBuilder)
       throws ExecutionException {
     return new BlazeAndroidLaunchTasksProvider(
-        project, this, applicationIdProvider, launchOptionsBuilder, isDebug, debuggerManager);
+        project, this, applicationIdProvider, launchOptionsBuilder);
   }
 
   @SuppressWarnings({"rawtypes"}) // Raw type from upstream.
@@ -194,7 +190,7 @@ class BlazeAndroidTestRunContext implements BlazeAndroidRunContext {
       String contributorsAmStartOptions,
       AndroidDebugger androidDebugger,
       AndroidDebuggerState androidDebuggerState,
-      ProcessHandlerLaunchStatus processHandlerLaunchStatus)
+      LaunchStatus launchStatus)
       throws ExecutionException {
     switch (configState.getLaunchMethod()) {
       case BLAZE_TEST:
@@ -217,12 +213,8 @@ class BlazeAndroidTestRunContext implements BlazeAndroidRunContext {
         } catch (ApkProvisionException e) {
           throw new ExecutionException(e);
         }
-        return StockAndroidTestLaunchTask.getStockTestLaunchTask(
-            configState,
-            applicationIdProvider,
-            launchOptions.isDebug(),
-            deployInfo,
-            processHandlerLaunchStatus);
+        return StockAndroidTestLaunchTaskBase.getStockTestLaunchTask(
+            configState, applicationIdProvider, launchOptions.isDebug(), deployInfo, launchStatus);
     }
     throw new AssertionError();
   }

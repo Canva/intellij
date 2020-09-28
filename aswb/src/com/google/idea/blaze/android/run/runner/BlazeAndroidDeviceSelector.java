@@ -16,9 +16,10 @@
 package com.google.idea.blaze.android.run.runner;
 
 import com.android.tools.idea.run.AndroidSessionInfo;
+import com.android.tools.idea.run.DeviceCount;
 import com.android.tools.idea.run.DeviceFutures;
+import com.android.tools.idea.run.deployment.DeviceAndSnapshotComboBoxTargetProvider.State;
 import com.android.tools.idea.run.editor.DeployTarget;
-import com.android.tools.idea.run.editor.DeployTargetState;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.Executor;
 import com.intellij.execution.runners.ExecutionEnvironment;
@@ -52,7 +53,6 @@ public interface BlazeAndroidDeviceSelector {
   DeviceSession getDevice(
       Project project,
       AndroidFacet facet,
-      BlazeAndroidRunConfigurationDeployTargetManager deployTargetManager,
       Executor executor,
       ExecutionEnvironment env,
       AndroidSessionInfo info,
@@ -100,7 +100,6 @@ public interface BlazeAndroidDeviceSelector {
     public DeviceSession getDevice(
         Project project,
         AndroidFacet facet,
-        BlazeAndroidRunConfigurationDeployTargetManager deployTargetManager,
         Executor executor,
         ExecutionEnvironment env,
         AndroidSessionInfo info,
@@ -115,18 +114,15 @@ public interface BlazeAndroidDeviceSelector {
         }
       }
 
-      DeployTarget deployTarget =
-          deployTargetManager.getDeployTarget(executor, env, facet, runConfigId);
+      DeployTarget deployTarget = BlazeDeployTargetService.getInstance(project).getDeployTarget();
       if (deployTarget == null) {
         return null;
       }
 
       DeviceFutures deviceFutures = null;
-      DeployTargetState deployTargetState = deployTargetManager.getCurrentDeployTargetState();
       if (!deployTarget.hasCustomRunProfileState(executor)) {
         deviceFutures =
-            deployTarget.getDevices(
-                deployTargetState, facet, deployTargetManager.getDeviceCount(), debug, runConfigId);
+            deployTarget.getDevices(new State(), facet, DeviceCount.SINGLE, debug, runConfigId);
       }
       return new DeviceSession(deployTarget, deviceFutures, info);
     }
