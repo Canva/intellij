@@ -175,7 +175,6 @@ def jars_from_output(output):
     if output == None:
         return []
     source_jars = get_source_jars(output)
-    jars = source_jars
     return [
         jar
         for jar in ([output.ijar if len(source_jars) > 0 and output.ijar else output.class_jar] + source_jars)
@@ -572,6 +571,40 @@ def _collect_generated_files(java):
         return [(java.annotation_processing.class_jar, java.annotation_processing.source_jar)]
     return []
 
+def import_as_java_source(kind, sources):
+    """Whether to import the given target as source or as a library.
+
+    https://github.com/bazelbuild/intellij/blob/28548e388093f986bb8fbd666917c3b42c434f6d/java/src/com/google/idea/blaze/java/sync/importer/JavaSourceFilter.java#L113"""
+    # Assume we're interested in all targets, ignore `targets` in the project view
+    return is_java_source_target(kind, sources) or is_java_proto_target(kind)
+
+def is_java_source_target(kind, sources):
+    return can_import_as_java_source(kind) and has_non_generated_sources(sources)
+
+def can_import_as_java_source(kind):
+    return kind not in [
+        "aar_import",
+        "java_import",
+        "java_wrap_cc",
+        "kotlin_stdlib",
+        "kt_jvm_import",
+        "scala_import",
+    ]
+
+def has_non_generated_sources(sources):
+    for source in sources:
+        if source.is_source:
+            return True
+    return False
+
+def is_java_proto_target(kind):
+    return kind in [
+        "java_lite_proto_library",
+        "java_mutable_proto_library",
+        "java_proto_library",
+        "proto_library",
+    ]
+
 def collect_java_info(target, ctx, semantics, ide_info, ide_info_file, output_groups):
     """Updates Java-specific output groups, returns false if not a Java target."""
     java = get_java_provider(target)
@@ -593,7 +626,7 @@ def collect_java_info(target, ctx, semantics, ide_info, ide_info_file, output_gr
     jars = [library_artifact(output) for output in java_outputs]
     class_jars = [output.class_jar for output in java_outputs if output and output.class_jar]
     output_jars = [jar for output in java_outputs for jar in jars_from_output(output)]
-    resolve_files = output_jars
+    resolve_files = [] if import_as_java_source(ctx.rule.kind, sources) else output_jars
     compile_files = class_jars
 
     gen_jars = []
