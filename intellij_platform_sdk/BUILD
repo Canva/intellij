@@ -135,6 +135,13 @@ config_setting(
 )
 
 config_setting(
+    name = "intellij-ue-2020.3",
+    values = {
+        "define": "ij_product=intellij-ue-2020.3",
+    },
+)
+
+config_setting(
     name = "android-studio-latest",
     values = {
         "define": "ij_product=android-studio-latest",
