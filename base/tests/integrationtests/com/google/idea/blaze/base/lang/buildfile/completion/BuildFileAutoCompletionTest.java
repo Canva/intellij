@@ -50,7 +50,7 @@ public class BuildFileAutoCompletionTest extends BuildFileIntegrationTestCase {
   }
 
   @Test
-  public void testNoPopupAfterNumber() {
+  public void testNoPopupAfterNumber() throws Throwable {
     completionTester.runWithAutoPopupEnabled(
         () -> {
           createBuildFile(new WorkspacePath("java/com/foo/BUILD"));

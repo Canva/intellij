@@ -29,6 +29,7 @@ import com.google.idea.blaze.base.lang.buildfile.psi.FuncallExpression;
 import com.google.idea.blaze.base.model.BlazeProjectData;
 import com.google.idea.blaze.base.sync.SyncCache;
 import com.google.idea.blaze.base.sync.data.BlazeProjectDataManager;
+import com.google.idea.sdkcompat.general.BaseSdkCompat.SyntheticFileSystemItemCompat;
 import com.intellij.codeInsight.navigation.CtrlMouseHandler;
 import com.intellij.lang.documentation.DocumentationProviderEx;
 import com.intellij.openapi.module.Module;
@@ -152,7 +153,7 @@ class BlazeGoImportResolver implements GoImportResolver {
    * resolve to a build rule in a {@link BuildFile}. We'll just return the {@link BuildFile} with a
    * navigation redirect.
    */
-  private static class GoPackageFileSystemItem extends SyntheticFileSystemItem {
+  private static class GoPackageFileSystemItem extends SyntheticFileSystemItemCompat {
     private final String name;
     private final FuncallExpression rule;
 
@@ -215,7 +216,7 @@ class BlazeGoImportResolver implements GoImportResolver {
     }
 
     @Override
-    public boolean processChildren(PsiElementProcessor<PsiFileSystemItem> psiElementProcessor) {
+    public boolean doProcessChildren(PsiElementProcessor<? super PsiFileSystemItem> psiElementProcessor) {
       return false;
     }
   }

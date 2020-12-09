@@ -30,6 +30,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.platform.PlatformProjectOpenProcessor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFileSystemItem;
+import com.intellij.psi.impl.SyntheticFileSystemItem;
+import com.intellij.psi.search.PsiElementProcessor;
 import com.intellij.ui.EditorNotifications;
 import com.intellij.ui.EditorNotificationsImpl;
 import com.intellij.ui.EditorTextField;
@@ -113,6 +116,20 @@ public final class BaseSdkCompat {
 
     void doCollectSlowLineMarkers(
         List<? extends PsiElement> elements, Collection<? super LineMarkerInfo<?>> result);
+  }
+
+  /** #api203: wildcard generics added in 2020.3. */
+  public static abstract class SyntheticFileSystemItemCompat extends SyntheticFileSystemItem {
+    public SyntheticFileSystemItemCompat(Project project) {
+      super(project);
+    }
+
+    @Override
+    public boolean processChildren(PsiElementProcessor<PsiFileSystemItem> psiElementProcessor) {
+      return doProcessChildren(psiElementProcessor);
+    }
+
+    public abstract boolean doProcessChildren(PsiElementProcessor<? super PsiFileSystemItem> psiElementProcessor);
   }
 
   /** #api193: changed in 2020.1 */

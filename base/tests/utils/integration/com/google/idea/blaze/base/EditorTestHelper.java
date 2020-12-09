@@ -55,8 +55,12 @@ public class EditorTestHelper {
   }
 
   public Editor openFileInEditor(VirtualFile file) {
-    EdtTestUtil.runInEdtAndWait(
-        (ThrowableRunnable<Throwable>) () -> testFixture.openFileInEditor(file));
+    try {
+      EdtTestUtil.runInEdtAndWait(
+          (ThrowableRunnable<Throwable>) () -> testFixture.openFileInEditor(file));
+    } catch (Throwable t) {
+      throw new RuntimeException(t);
+    }
     return testFixture.getEditor();
   }
 
@@ -126,11 +130,15 @@ public class EditorTestHelper {
 
   public void setCaretPosition(Editor editor, int lineNumber, int columnNumber) {
     final CaretInfo info = new CaretInfo(new LogicalPosition(lineNumber, columnNumber), null);
-    EdtTestUtil.runInEdtAndWait(
-        (ThrowableRunnable<Throwable>)
-            () ->
-                EditorTestUtil.setCaretsAndSelection(
-                    editor, new CaretAndSelectionState(ImmutableList.of(info), null)));
+    try {
+      EdtTestUtil.runInEdtAndWait(
+          (ThrowableRunnable<Throwable>)
+              () ->
+                  EditorTestUtil.setCaretsAndSelection(
+                      editor, new CaretAndSelectionState(ImmutableList.of(info), null)));
+    } catch (Throwable t) {
+      throw new RuntimeException(t);
+    }
   }
 
   public void assertCaretPosition(Editor editor, int lineNumber, int columnNumber) {
