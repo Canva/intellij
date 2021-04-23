@@ -112,7 +112,7 @@ public class TestFileSystem {
   public PsiFile getPsiFile(VirtualFile file) {
     return new ReadAction<PsiFile>() {
       @Override
-      protected void run(Result<? super PsiFile> result) throws Throwable {
+      protected void run(Result<PsiFile> result) throws Throwable {
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         assertThat(psiFile).isNotNull();
         result.setResult(psiFile);
@@ -124,7 +124,7 @@ public class TestFileSystem {
   public PsiDirectory getPsiDirectory(VirtualFile file) {
     return new ReadAction<PsiDirectory>() {
       @Override
-      protected void run(Result<? super PsiDirectory> result) throws Throwable {
+      protected void run(Result<PsiDirectory> result) throws Throwable {
         PsiDirectory psiFile = PsiManager.getInstance(project).findDirectory(file);
         assertThat(psiFile).isNotNull();
         result.setResult(psiFile);

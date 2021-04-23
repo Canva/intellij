@@ -190,7 +190,7 @@ public class RuleTargetCompletionTest extends BuildFileIntegrationTestCase {
   }
 
   private static void setBuildLanguageSpecRules(
-      MockBuildLanguageSpecProvider specProvider, String... ruleNames) {
+      MockBuildLanguageSpecProvider specProvider, String... ruleNames) throws Throwable {
     ImmutableMap.Builder<String, RuleDefinition> rules = ImmutableMap.builder();
     for (String name : ruleNames) {
       rules.put(name, new RuleDefinition(name, ImmutableMap.of(), null));

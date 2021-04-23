@@ -153,7 +153,7 @@ public class BuiltInFunctionCompletionContributorTest extends BuildFileIntegrati
   }
 
   @Test
-  public void testMandatoryAttributesTemplate() {
+  public void testMandatoryAttributesTemplate() throws Throwable {
     setRuleWithAttributes(
         "rule_with_attrs",
         ImmutableMap.of(
@@ -177,7 +177,7 @@ public class BuiltInFunctionCompletionContributorTest extends BuildFileIntegrati
   }
 
   @Test
-  public void testSrcsDepsTemplate() {
+  public void testSrcsDepsTemplate() throws Throwable {
     setRuleWithAttributes(
         "haskell_binary",
         ImmutableMap.of(

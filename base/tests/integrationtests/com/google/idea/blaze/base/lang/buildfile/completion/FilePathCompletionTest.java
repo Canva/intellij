@@ -124,7 +124,7 @@ public class FilePathCompletionTest extends BuildFileIntegrationTestCase {
   }
 
   @Test
-  public void testCompletionSuggestionString() {
+  public void testCompletionSuggestionString() throws Throwable {
     workspace.createDirectory(new WorkspacePath("foo"));
     workspace.createDirectory(new WorkspacePath("bar"));
     workspace.createDirectory(new WorkspacePath("other"));
