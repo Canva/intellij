@@ -80,7 +80,7 @@ class ExternalFormatterCodeStyleManager extends DelegatingCodeStyleManager {
     if (formatter != null) {
       formatInternal(formatter, file, ranges);
     } else {
-      super.reformatText(file, ranges);
+      super.reformatText(file, (Collection<TextRange>) ranges);
     }
   }
 
@@ -90,7 +90,7 @@ class ExternalFormatterCodeStyleManager extends DelegatingCodeStyleManager {
     if (formatter != null) {
       formatInternal(formatter, file, ranges);
     } else {
-      super.reformatTextWithContext(file, ranges);
+      super.reformatTextWithContext(file, (Collection<TextRange>) ranges);
     }
   }
 

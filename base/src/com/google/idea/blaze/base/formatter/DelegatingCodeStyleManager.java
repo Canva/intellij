@@ -123,13 +123,13 @@ abstract class DelegatingCodeStyleManager extends CodeStyleManagerAdapter
   @Override
   public void doReformatText(PsiFile file, Collection<? extends TextRange> ranges)
       throws IncorrectOperationException {
-    delegate.reformatText(file, ranges);
+    delegate.reformatText(file, (Collection<TextRange>) ranges);
   }
 
   @Override
   public void doReformatTextWithContext(PsiFile file, Collection<? extends TextRange> ranges)
       throws IncorrectOperationException {
-    delegate.reformatTextWithContext(file, ranges);
+    delegate.reformatTextWithContext(file, (Collection<TextRange>) ranges);
   }
 
   @Override
