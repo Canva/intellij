@@ -39,7 +39,7 @@ public class ServiceHelper {
       ExtensionPointName<T> name, Class<T> clazz, Disposable parentDisposable) {
     ExtensionsArea area = Extensions.getRootArea();
     String epName = name.getName();
-    area.registerExtensionPoint(epName, clazz.getName(), ExtensionPoint.Kind.INTERFACE);
+    area.registerExtensionPoint(epName, clazz.getName(), ExtensionPoint.Kind.BEAN_CLASS);
     Disposer.register(parentDisposable, () -> area.unregisterExtensionPoint(epName));
   }
 

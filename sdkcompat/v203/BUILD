@@ -27,6 +27,7 @@ java_library(
         ]),
         intellij_ue = glob([
             "com/google/idea/sdkcompat/java/**",
+            "com/google/idea/sdkcompat/javascript/**",
             "com/google/idea/sdkcompat/scala/**",
         ]),
     ),
@@ -34,6 +35,7 @@ java_library(
     deps = [
         "//intellij_platform_sdk:jsr305",
         "//intellij_platform_sdk:plugin_api",
+        "//third_party/javascript",
         "//third_party/python",
         "//third_party/scala",
     ],
