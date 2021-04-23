@@ -120,6 +120,21 @@ config_setting(
 )
 
 config_setting(
+    name = "intellij-2021.1",
+    values = {
+        "define": "ij_product=intellij-2021.1",
+    },
+)
+
+config_setting(
+    name = "intellij-2021.1-mac",
+    values = {
+        "cpu": "darwin_x86_64",
+        "define": "ij_product=intellij-2021.1",
+    },
+)
+
+config_setting(
     name = "intellij-ue-2020.1",
     values = {
         "define": "ij_product=intellij-ue-2020.1",
@@ -391,6 +406,7 @@ java_library(
         "intellij-2020.1": [":bundled_jsr305"],
         "intellij-2020.2": [":bundled_jsr305"],
         "intellij-2020.3": [":bundled_jsr305"],
+        "intellij-2021.1": [":bundled_jsr305"],
         "intellij-ue-2020.1": ["@jsr305_annotations//jar"],
         "intellij-ue-2020.2": ["@jsr305_annotations//jar"],
         "intellij-ue-2020.3": [":bundled_jsr305"],

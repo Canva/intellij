@@ -59,11 +59,11 @@ public final class FallbackPythonSdkSuggester extends PySdkSuggester {
     List<PyDetectedSdk> detectedSdks = PySdkExtKt.detectSystemWideSdks(null, ImmutableList.of());
     detectedSdks.stream()
         .filter(sdk -> sdk.getHomePath() != null && getSdkLanguageLevel(sdk).isPython2())
-        .max(Comparator.comparingInt(sdk -> getSdkLanguageLevel(sdk).getVersion()))
+        .max(Comparator.comparingInt(sdk -> (getSdkLanguageLevel(sdk).getMajorVersion() * 100) + getSdkLanguageLevel(sdk).getMinorVersion()))
         .ifPresent((sdk) -> builder.put(PythonVersion.PY2, sdk.getHomePath()));
     detectedSdks.stream()
         .filter(sdk -> sdk.getHomePath() != null && getSdkLanguageLevel(sdk).isPy3K())
-        .max(Comparator.comparingInt(sdk -> getSdkLanguageLevel(sdk).getVersion()))
+        .max(Comparator.comparingInt(sdk -> (getSdkLanguageLevel(sdk).getMajorVersion() * 100) + getSdkLanguageLevel(sdk).getMinorVersion()))
         .ifPresent((sdk) -> builder.put(PythonVersion.PY3, sdk.getHomePath()));
     return builder.build();
   }
