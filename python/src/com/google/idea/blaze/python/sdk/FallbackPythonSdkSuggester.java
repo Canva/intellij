@@ -30,6 +30,7 @@ import com.jetbrains.python.psi.LanguageLevel;
 import com.jetbrains.python.sdk.PyDetectedSdk;
 import com.jetbrains.python.sdk.PySdkExtKt;
 import com.jetbrains.python.sdk.flavors.PythonSdkFlavor;
+import com.google.idea.sdkcompat.python.LanguageLevelDelegate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
@@ -59,11 +60,11 @@ public final class FallbackPythonSdkSuggester extends PySdkSuggester {
     List<PyDetectedSdk> detectedSdks = PySdkExtKt.detectSystemWideSdks(null, ImmutableList.of());
     detectedSdks.stream()
         .filter(sdk -> sdk.getHomePath() != null && getSdkLanguageLevel(sdk).isPython2())
-        .max(Comparator.comparingInt(sdk -> (getSdkLanguageLevel(sdk).getMajorVersion() * 100) + getSdkLanguageLevel(sdk).getMinorVersion()))
+        .max(Comparator.comparingInt(sdk -> new LanguageLevelDelegate(getSdkLanguageLevel(sdk)).getVersion()))
         .ifPresent((sdk) -> builder.put(PythonVersion.PY2, sdk.getHomePath()));
     detectedSdks.stream()
         .filter(sdk -> sdk.getHomePath() != null && getSdkLanguageLevel(sdk).isPy3K())
-        .max(Comparator.comparingInt(sdk -> (getSdkLanguageLevel(sdk).getMajorVersion() * 100) + getSdkLanguageLevel(sdk).getMinorVersion()))
+        .max(Comparator.comparingInt(sdk -> new LanguageLevelDelegate(getSdkLanguageLevel(sdk)).getVersion()))
         .ifPresent((sdk) -> builder.put(PythonVersion.PY3, sdk.getHomePath()));
     return builder.build();
   }
