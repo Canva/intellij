@@ -24,8 +24,7 @@ import com.google.idea.blaze.base.lang.buildfile.psi.StringLiteral;
 import com.google.idea.blaze.base.lang.buildfile.references.AttributeSpecificStringLiteralReferenceProvider;
 import com.intellij.patterns.ElementPattern;
 import com.intellij.patterns.PatternCondition;
-import com.google.idea.sdkcompat.platform.JavaClassQualifiedNameReferenceCompat;
-import com.intellij.patterns.PatternConditionPlus;
+import com.google.idea.sdkcompat.platform.PatternConditionPlusCompat;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.PsiElementBase;
@@ -35,7 +34,6 @@ import com.intellij.util.ProcessingContext;
 
 /** Handles attribute values which should be fully-qualified java class names. */
 public class JavaClassQualifiedNameReference
-    extends JavaClassQualifiedNameReferenceCompat
     implements AttributeSpecificStringLiteralReferenceProvider {
 
   private static final ImmutableSet<String> JAVA_CLASS_STRING_TYPES =
@@ -47,6 +45,18 @@ public class JavaClassQualifiedNameReference
           .inside(
               psiElement(Keyword.class)
                   .with(nameCondition(StandardPatterns.string().oneOf(JAVA_CLASS_STRING_TYPES))));
+
+  private static PatternCondition<PsiElementBase> nameCondition(final ElementPattern<?> pattern) {
+    return new PatternConditionPlusCompat<PsiElementBase, String>("_withPsiName", pattern) {
+      @Override
+      public boolean doProcessValues(
+              PsiElementBase t,
+              ProcessingContext context,
+              PairProcessor<? super String, ? super ProcessingContext> processor) {
+        return processor.process(t.getName(), context);
+      }
+    };
+  }
 
   @Override
   public PsiReference[] getReferences(String attributeName, StringLiteral literal) {

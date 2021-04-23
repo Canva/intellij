@@ -22,6 +22,7 @@ import com.google.idea.blaze.base.lang.projectview.formatting.ProjectViewRearran
 import com.google.idea.blaze.base.lang.projectview.psi.ProjectViewPsiFile;
 import com.google.idea.blaze.base.lang.projectview.psi.ProjectViewPsiListItem;
 import com.google.idea.blaze.base.lang.projectview.psi.ProjectViewPsiListSection;
+import com.google.idea.sdkcompat.formatter.ProjectViewRearrangerAdapter;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.TextRange;
@@ -33,7 +34,6 @@ import com.intellij.psi.codeStyle.arrangement.ArrangementSettingsSerializer;
 import com.intellij.psi.codeStyle.arrangement.DefaultArrangementEntry;
 import com.intellij.psi.codeStyle.arrangement.DefaultArrangementSettingsSerializer;
 import com.intellij.psi.codeStyle.arrangement.NameAwareArrangementEntry;
-import com.intellij.psi.codeStyle.arrangement.Rearranger;
 import com.intellij.psi.codeStyle.arrangement.match.ArrangementEntryMatcher;
 import com.intellij.psi.codeStyle.arrangement.match.StdArrangementEntryMatcher;
 import com.intellij.psi.codeStyle.arrangement.match.StdArrangementMatchRule;
@@ -57,7 +57,7 @@ import javax.annotation.Nullable;
  *
  * <p>Currently limited to ordering list elements by string.
  */
-public class ProjectViewRearranger implements Rearranger<Entry>, ArrangementStandardSettingsAware {
+public class ProjectViewRearranger extends ProjectViewRearrangerAdapter<Entry> implements ArrangementStandardSettingsAware {
 
   static class Entry extends DefaultArrangementEntry implements NameAwareArrangementEntry {
     private final String name;
@@ -75,10 +75,10 @@ public class ProjectViewRearranger implements Rearranger<Entry>, ArrangementStan
 
   @Nullable
   @Override
-  public Pair<Entry, List<Entry>> parseWithNew(
+  public Pair<Entry, List<Entry>> doParseWithNew(
       PsiElement root,
       @Nullable Document document,
-      Collection<TextRange> ranges,
+      Collection<? extends TextRange> ranges,
       PsiElement element,
       ArrangementSettings settings) {
     // no support for generating new elements
@@ -86,10 +86,10 @@ public class ProjectViewRearranger implements Rearranger<Entry>, ArrangementStan
   }
 
   @Override
-  public List<Entry> parse(
+  public List<Entry> doParse(
       PsiElement root,
       @Nullable Document document,
-      Collection<TextRange> ranges,
+      Collection<? extends TextRange> ranges,
       ArrangementSettings settings) {
     if (root instanceof ProjectViewPsiListSection) {
       Entry entry = fromListSection(ranges, (ProjectViewPsiListSection) root);
@@ -107,7 +107,7 @@ public class ProjectViewRearranger implements Rearranger<Entry>, ArrangementStan
 
   @Nullable
   private static Entry fromListSection(
-      Collection<TextRange> ranges, ProjectViewPsiListSection listSection) {
+      Collection<? extends TextRange> ranges, ProjectViewPsiListSection listSection) {
     if (!isWithinBounds(ranges, listSection.getTextRange())) {
       return null;
     }
@@ -131,7 +131,7 @@ public class ProjectViewRearranger implements Rearranger<Entry>, ArrangementStan
     return parent;
   }
 
-  private static boolean isWithinBounds(Collection<TextRange> ranges, TextRange range) {
+  private static boolean isWithinBounds(Collection<? extends TextRange> ranges, TextRange range) {
     return ranges.stream().anyMatch(r -> r.intersects(range));
   }
 

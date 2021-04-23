@@ -16,6 +16,7 @@
 package com.google.idea.blaze.base.formatter;
 
 import com.google.idea.sdkcompat.formatter.DelegatingCodeStyleManagerCompat;
+import com.google.idea.sdkcompat.formatter.CodeStyleManagerAdapter;
 import com.intellij.formatting.FormattingMode;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.editor.Document;
@@ -35,7 +36,7 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 
 /** A delegating {@link CodeStyleManager}. */
-abstract class DelegatingCodeStyleManager extends CodeStyleManager
+abstract class DelegatingCodeStyleManager extends CodeStyleManagerAdapter
     implements FormattingModeAwareIndentAdjuster {
 
   protected final CodeStyleManager delegate;
@@ -120,13 +121,13 @@ abstract class DelegatingCodeStyleManager extends CodeStyleManager
   }
 
   @Override
-  public void reformatText(PsiFile file, Collection<TextRange> ranges)
+  public void doReformatText(PsiFile file, Collection<? extends TextRange> ranges)
       throws IncorrectOperationException {
     delegate.reformatText(file, ranges);
   }
 
   @Override
-  public void reformatTextWithContext(PsiFile file, Collection<TextRange> ranges)
+  public void doReformatTextWithContext(PsiFile file, Collection<? extends TextRange> ranges)
       throws IncorrectOperationException {
     delegate.reformatTextWithContext(file, ranges);
   }
