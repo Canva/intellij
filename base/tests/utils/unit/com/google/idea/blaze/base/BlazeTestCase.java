@@ -21,6 +21,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.ExtensionPointName;
 import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.extensions.ExtensionPoint;
 import com.intellij.openapi.extensions.impl.ExtensionPointImpl;
 import com.intellij.openapi.extensions.impl.ExtensionsAreaImpl;
 import com.intellij.openapi.project.Project;
@@ -115,7 +116,7 @@ public class BlazeTestCase {
 
   protected <T> ExtensionPointImpl<T> registerExtensionPoint(
       ExtensionPointName<T> name, Class<T> type) {
-    extensionsArea.registerExtensionPoint(name.getName(), type.getName());
+    extensionsArea.registerExtensionPoint(name.getName(), type.getName(), ExtensionPoint.Kind.INTERFACE);
     return extensionsArea.getExtensionPoint(name.getName());
   }
 }
