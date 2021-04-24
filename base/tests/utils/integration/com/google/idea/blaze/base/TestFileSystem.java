@@ -24,7 +24,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.idea.blaze.base.io.FileOperationProvider;
 import com.google.idea.blaze.base.io.VirtualFileSystemProvider;
-import com.intellij.openapi.application.ReadAction;
+import com.google.idea.sdkcompat.ReadActionAdapter;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
@@ -110,9 +110,9 @@ public class TestFileSystem {
 
   /** Finds PsiFile, and asserts that it's not null. */
   public PsiFile getPsiFile(VirtualFile file) {
-    return new ReadAction<PsiFile>() {
+    return new ReadActionAdapter<PsiFile>() {
       @Override
-      protected void run(Result<PsiFile> result) throws Throwable {
+      protected void doRun(Result<? super PsiFile> result) {
         PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
         assertThat(psiFile).isNotNull();
         result.setResult(psiFile);
@@ -122,9 +122,9 @@ public class TestFileSystem {
 
   /** Finds PsiDirectory, and asserts that it's not null. */
   public PsiDirectory getPsiDirectory(VirtualFile file) {
-    return new ReadAction<PsiDirectory>() {
+    return new ReadActionAdapter<PsiDirectory>() {
       @Override
-      protected void run(Result<PsiDirectory> result) throws Throwable {
+      protected void doRun(Result<? super PsiDirectory> result) {
         PsiDirectory psiFile = PsiManager.getInstance(project).findDirectory(file);
         assertThat(psiFile).isNotNull();
         result.setResult(psiFile);
