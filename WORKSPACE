@@ -176,14 +176,6 @@ http_archive(
     url = "https://plugins.jetbrains.com/files/9568/112071/go-203.7717.11.zip",
 )
 
-_SCALA_BUILD_FILE = """
-java_import(
-    name = "scala",
-    jars = glob(["Scala/lib/*.jar"]),
-    visibility = ["//visibility:public"],
-)
-"""
-
 # Go plugin for IntelliJ UE. Required at compile-time for Bazel integration.
 http_archive(
     name = "go_2021_1",
@@ -191,6 +183,14 @@ http_archive(
     sha256 = "9e95fb95627f50855d416be8acf3f4d77d8be913b1f9fa1e239cc5fb5adb982e",
     url = "https://plugins.jetbrains.com/files/9568/114842/go-211.6693.14.zip",
 )
+
+_SCALA_BUILD_FILE = """
+java_import(
+    name = "scala",
+    jars = glob(["Scala/lib/*.jar"]),
+    visibility = ["//visibility:public"],
+)
+"""
 
 # Scala plugin for IntelliJ CE. Required at compile-time for scala-specific features.
 http_archive(
@@ -220,8 +220,8 @@ http_archive(
 http_archive(
     name = "scala_2021_1",
     build_file_content = _SCALA_BUILD_FILE,
-    sha256 = "5bed116a6d6d2dfde74c9304e40397f347680e3c56a3b755d1a32dc5cd98734c",
-    url = "https://plugins.jetbrains.com/files/1347/115572/scala-intellij-bin-2021.1.16.zip",
+    sha256 = "23afae2ebed1c84be6c8aa0bc48db66bf8e769c84b6b4417af5f33826e418be1",
+    url = "https://plugins.jetbrains.com/files/1347/118002/scala-intellij-bin-2021.1.17.zip",
 )
 
 # The plugin api for Android Studio 4.1. This is required to build ASwB,
