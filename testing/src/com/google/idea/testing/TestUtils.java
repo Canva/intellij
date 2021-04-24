@@ -150,7 +150,6 @@ public final class TestUtils {
   }
 
   static MockProject mockProject(@Nullable PicoContainer container, Disposable parentDisposable) {
-    Extensions.registerAreaClass("IDEA_PROJECT", null);
     container = container != null ? container : new DefaultPicoContainer();
     return new MockProject(container, parentDisposable);
   }
