@@ -116,7 +116,7 @@ public class BlazeTestCase {
 
   protected <T> ExtensionPointImpl<T> registerExtensionPoint(
       ExtensionPointName<T> name, Class<T> type) {
-    extensionsArea.registerExtensionPoint(name.getName(), type.getName());
+    extensionsArea.registerExtensionPoint(name.getName(), type.getName(), ExtensionPoint.Kind.INTERFACE);
     return extensionsArea.getExtensionPoint(name.getName());
   }
 }
