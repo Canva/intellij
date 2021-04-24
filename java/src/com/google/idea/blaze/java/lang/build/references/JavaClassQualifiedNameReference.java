@@ -50,9 +50,9 @@ public class JavaClassQualifiedNameReference
     return new PatternConditionPlusCompat<PsiElementBase, String>("_withPsiName", pattern) {
       @Override
       public boolean doProcessValues(
-              PsiElementBase t,
-              ProcessingContext context,
-              PairProcessor<? super String, ? super ProcessingContext> processor) {
+          PsiElementBase t,
+          ProcessingContext context,
+          PairProcessor<? super String, ? super ProcessingContext> processor) {
         return processor.process(t.getName(), context);
       }
     };
