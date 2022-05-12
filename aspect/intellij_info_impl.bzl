@@ -653,22 +653,16 @@ def collect_java_info(target, ctx, semantics, ide_info, ide_info_file, output_gr
     plugin_processor_jars = [annotation_processing_jars(jar, None) for jar in depset(plugin_processor_jar_files).to_list()]
 
     java_info = struct_omit_none(
-        filtered_gen_jar = filtered_gen_jar,
-        generated_jars = gen_jars,
-        jars = jars,
         jdeps = jdeps,
         main_class = getattr(ctx.rule.attr, "main_class", None),
         package_manifest = artifact_location(package_manifest),
         sources = sources,
         test_class = getattr(ctx.rule.attr, "test_class", None),
-        plugin_processor_jars = plugin_processor_jars,
     )
 
     ide_info["java_ide_info"] = java_info
     ide_info_files += [ide_info_file]
     update_sync_output_groups(output_groups, "intellij-info-java", depset(ide_info_files))
-    update_sync_output_groups(output_groups, "intellij-compile-java", depset(compile_files))
-    update_sync_output_groups(output_groups, "intellij-resolve-java", depset(resolve_files))
 
     # also add transitive hjars + src jars, to catch implicit deps
     if hasattr(java, "transitive_compile_time_jars"):
