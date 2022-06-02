@@ -38,6 +38,18 @@ java_library(
         "//sdkcompat",
         "//third_party/auto_value",
         "@error_prone_annotations//jar",
+        "@opentelemetry-api//jar",
+        "@opentelemetry-context//jar",
+        "@opentelemetry-sdk//jar",
+        "@opentelemetry-sdk-common//jar",
+        "@opentelemetry-sdk-metrics//jar",
+        "@opentelemetry-sdk-trace//jar",
+        "@opentelemetry-exporter-otlp//jar",
+        "@opentelemetry-exporter-otlp-common//jar",
+        "@opentelemetry-exporter-otlp-metrics//jar",
+        "@opentelemetry-exporter-otlp-trace//jar",
+        "@opentelemetry-semconv//jar",
+        "@opentelemetry-sdk-logs//jar",
     ],
 )
 
