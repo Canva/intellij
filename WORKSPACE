@@ -4,6 +4,28 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:jvm.bzl", "jvm_maven_import_external")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+RULES_JVM_EXTERNAL_TAG = "4.2"
+RULES_JVM_EXTERNAL_SHA = "cd1a77b7b02e8e008439ca76fd34f5b07aecb8c752961f9640dea15e9e5ba1ca"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+
+rules_jvm_external_setup()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
 # Long-lived download links available at: https://www.jetbrains.com/intellij-repository/releases
 
 # The plugin api for IntelliJ 2021.2. This is required to build IJwB,
@@ -495,4 +517,21 @@ jvm_maven_import_external(
     artifact_sha256 = "2e3091a94b8b822c9b68c4dc92ad6a6b0e39e2245b0fc75862de20f5a7a71e9a",
     licenses = ["notice"],  # Apache 2.0
     server_urls = ["https://repo1.maven.org/maven2"],
+)
+
+maven_install(
+    artifacts = [
+        "junit:junit:4.12", # removing this breaks rules_jvm_external at the time of commit
+        "io.opentelemetry:opentelemetry-bom:1.14.0",
+        "io.opentelemetry:opentelemetry-api:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk-common:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk-trace:1.14.0",
+        "io.opentelemetry:opentelemetry-exporter-otlp:1.14.0",
+        "io.opentelemetry:opentelemetry-exporter-otlp-trace:1.14.0",
+        "io.opentelemetry:opentelemetry-semconv:1.14.0-alpha",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
 )
