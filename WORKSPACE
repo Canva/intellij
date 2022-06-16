@@ -4,6 +4,28 @@ load("@bazel_tools//tools/build_defs/repo:git.bzl", "new_git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:jvm.bzl", "jvm_maven_import_external")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+RULES_JVM_EXTERNAL_TAG = "4.2"
+RULES_JVM_EXTERNAL_SHA = "cd1a77b7b02e8e008439ca76fd34f5b07aecb8c752961f9640dea15e9e5ba1ca"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+load("@rules_jvm_external//:repositories.bzl", "rules_jvm_external_deps")
+
+rules_jvm_external_deps()
+
+load("@rules_jvm_external//:setup.bzl", "rules_jvm_external_setup")
+
+rules_jvm_external_setup()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
 # Long-lived download links available at: https://www.jetbrains.com/intellij-repository/releases
 
 # The plugin api for IntelliJ 2021.2. This is required to build IJwB,
@@ -497,100 +519,19 @@ jvm_maven_import_external(
     server_urls = ["https://repo1.maven.org/maven2"],
 )
 
-# BOM imports are not supported, so we have to pin each opentelemetry-bom
-# dependency manually
-jvm_maven_import_external(
-    name = "opentelemetry-api",
-    artifact = "io.opentelemetry:opentelemetry-api:1.14.0",
-    artifact_sha256 = "5922fb477144cfdba2ae149e4addb3cf79ccc783b3300856b0a47c6e8dee6a7e",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-context",
-    artifact = "io.opentelemetry:opentelemetry-context:1.14.0",
-    artifact_sha256 = "2498e5196a862c1a9155dc8d73609b320c063e1ac143a503ad3f16146ece09ed",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-sdk",
-    artifact = "io.opentelemetry:opentelemetry-sdk:1.14.0",
-    artifact_sha256 = "e2328e0363b3a1ab8dbf5d7d1955aa332a6d55ee0f4bf254fa7a6164ef4f77c1",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-sdk-common",
-    artifact = "io.opentelemetry:opentelemetry-sdk-common:1.14.0",
-    artifact_sha256 = "be394212144560a9b1a8bb45e2e51b18a810b556347c7a6e8911fd05eea7556f",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-sdk-metrics",
-    artifact = "io.opentelemetry:opentelemetry-sdk-metrics:1.14.0",
-    artifact_sha256 = "c5ac862eba5f9c6273766e888be8a6a78b603e8b2a344e4b72463c94ae91a80f",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-sdk-trace",
-    artifact = "io.opentelemetry:opentelemetry-sdk-trace:1.14.0",
-    artifact_sha256 = "f9fe68b809fdb64f34804825d380d9fbbbd766c124ac763bb86e401f06c602a5",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-   name = "opentelemetry-exporter-otlp",
-   artifact = "io.opentelemetry:opentelemetry-exporter-otlp:1.14.0",
-   artifact_sha256 = "8a029f728cd4571fbc81ffbe001114b5fc7820f49e34f4277c7c8c87c98c5417",
-   licenses = ["notice"],  # Apache 2.0
-   server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-exporter-otlp-common",
-    artifact = "io.opentelemetry:opentelemetry-exporter-otlp-common:1.14.0",
-    artifact_sha256 = "9c9435e084dee4bcf7a301bbf4759cf5beddfc16288e895d210229cc694cfcc9",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-exporter-otlp-metrics",
-    artifact = "io.opentelemetry:opentelemetry-exporter-otlp-metrics:1.14.0",
-    artifact_sha256 = "512c2e603fb09ca5b548eab65fa0e0efbaf5043c94f0b3c19f2ee2cbe97b0aff",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-exporter-otlp-trace",
-    artifact = "io.opentelemetry:opentelemetry-exporter-otlp-trace:1.14.0",
-    artifact_sha256 = "c407b2a740bfe31f384192a3af35e92a9673f799fde0c4cf8bb4f4e064685f86",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-semconv",
-    artifact = "io.opentelemetry:opentelemetry-semconv:1.14.0-alpha",
-    artifact_sha256 = "cafdfbc3173e930c57c46021369bab237ae7b70cdbbbb60883caa3a7fe0b0662",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
-)
-
-jvm_maven_import_external(
-    name = "opentelemetry-sdk-logs",
-    artifact = "io.opentelemetry:opentelemetry-sdk-logs:1.14.0-alpha",
-    artifact_sha256 = "cf35c7035de8ef6b485620c570cf71e5319b4f7c8acddca136b17f84b05da3e5",
-    licenses = ["notice"],  # Apache 2.0
-    server_urls = ["https://repo1.maven.org/maven2"],
+maven_install(
+    artifacts = [
+        "junit:junit:4.12", # removing this breaks rules_jvm_external at the time of commit
+        "io.opentelemetry:opentelemetry-bom:1.14.0",
+        "io.opentelemetry:opentelemetry-api:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk-common:1.14.0",
+        "io.opentelemetry:opentelemetry-sdk-trace:1.14.0",
+        "io.opentelemetry:opentelemetry-exporter-otlp:1.14.0",
+        "io.opentelemetry:opentelemetry-exporter-otlp-trace:1.14.0",
+        "io.opentelemetry:opentelemetry-semconv:1.14.0-alpha",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+    ],
 )
