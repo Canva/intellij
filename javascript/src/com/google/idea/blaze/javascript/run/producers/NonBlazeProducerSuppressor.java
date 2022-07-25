@@ -38,7 +38,6 @@ public class NonBlazeProducerSuppressor implements StartupActivity {
   private static final ImmutableList<Class<? extends RunConfigurationProducer<?>>>
       PRODUCERS_TO_SUPPRESS =
           ImmutableList.of(
-              JestRunConfigurationProducer.class,
               // Not suppressing JestRunConfigurationProduce since that prevents Jest tests from
               // running properly, see https://github.com/bazelbuild/intellij/issues/3629
               // JestRunConfigurationProducer.class,
