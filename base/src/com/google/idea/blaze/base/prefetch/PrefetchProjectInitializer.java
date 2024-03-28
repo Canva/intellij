@@ -62,20 +62,26 @@ public class PrefetchProjectInitializer implements StartupActivity.DumbAware {
             }),
         "Reading local caches");
 
-    PrefetchIndexingTask.submitPrefetchingTask(
-        project,
-        Futures.submitAsync(
-            () -> {
-              BlazeProjectData projectData = getBlazeProjectData(project);
-              ProjectViewSet viewSet = getProjectViewSet(project);
-              if (projectData == null || viewSet == null) {
-                return Futures.immediateFuture(null);
-              }
-              return PrefetchService.getInstance()
-                  .prefetchProjectFiles(project, viewSet, projectData);
-            },
-            PooledThreadExecutor.INSTANCE),
-        "Initial Prefetching");
+    // This is blocking the shared index script from running. 
+    // There is an existing but it is unlikely to be fixed any time soon
+    // https://youtrack.jetbrains.com/issue/IDEA-282126
+    //
+    // See https://canvadev.atlassian.net/browse/DEVEN-2916
+    //
+    // PrefetchIndexingTask.submitPrefetchingTask(
+    //     project,
+    //     Futures.submitAsync(
+    //         () -> {
+    //           BlazeProjectData projectData = getBlazeProjectData(project);
+    //           ProjectViewSet viewSet = getProjectViewSet(project);
+    //           if (projectData == null || viewSet == null) {
+    //             return Futures.immediateFuture(null);
+    //           }
+    //           return PrefetchService.getInstance()
+    //               .prefetchProjectFiles(project, viewSet, projectData);
+    //         },
+    //         PooledThreadExecutor.INSTANCE),
+    //     "Initial Prefetching");
   }
 
   @Nullable
