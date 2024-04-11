@@ -53,21 +53,21 @@ public class PrefetchProjectInitializer implements StartupActivity.DumbAware {
       // TODO(querysync)
       return;
     }
-    PrefetchIndexingTask.submitPrefetchingTask(
-        project,
-        PooledThreadExecutor.INSTANCE.submit(
-            () -> {
-              RemoteOutputsCache.getInstance(project).initialize();
-              FileCaches.initialize(project);
-            }),
-        "Reading local caches");
-
     // This is blocking the shared index script from running. 
     // There is an existing but it is unlikely to be fixed any time soon
     // https://youtrack.jetbrains.com/issue/IDEA-282126
     //
     // See https://canvadev.atlassian.net/browse/DEVEN-2916
     //
+    // PrefetchIndexingTask.submitPrefetchingTask(
+    //     project,
+    //     PooledThreadExecutor.INSTANCE.submit(
+    //         () -> {
+    //           RemoteOutputsCache.getInstance(project).initialize();
+    //           FileCaches.initialize(project);
+    //         }),
+    //     "Reading local caches");
+
     // PrefetchIndexingTask.submitPrefetchingTask(
     //     project,
     //     Futures.submitAsync(
